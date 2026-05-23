@@ -1,6 +1,4 @@
-/* ============================================================
-   statistics.js
-   ============================================================ */
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
@@ -43,7 +41,7 @@ async function renderStats() {
     }
 }
 
-/* ── BREAKDOWN BY TYPE ───────────────────────────────────── */
+/*  BREAKDOWN BY TYPE  */
 
 function renderTypeBreakdown(tasks) {
     const el     = document.getElementById('type-breakdown');
@@ -76,7 +74,7 @@ function renderTypeBreakdown(tasks) {
     }).join('');
 }
 
-/* ── COURSE PROGRESS ─────────────────────────────────────── */
+/*  COURSE PROGRESS  */
 
 function renderCourseProgress(tasks, courses, now) {
     const el = document.getElementById('course-progress');

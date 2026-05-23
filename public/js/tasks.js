@@ -1,6 +1,4 @@
-/* ============================================================
-   tasks.js
-   ============================================================ */
+
 
 let allTasks   = [];
 let allCourses = [];
@@ -8,7 +6,7 @@ let allCourses = [];
 const PRIORITY_RANK  = { High: 0, Medium: 1, Low: 2 };
 const PRIORITY_BADGE = { High: 'badge-red', Medium: 'badge-amber', Low: 'badge-green' };
 
-/* ── INIT ────────────────────────────────────────────────── */
+/*  INIT  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
@@ -34,7 +32,7 @@ async function loadData() {
     }
 }
 
-/* ── COURSE DROPDOWNS ────────────────────────────────────── */
+/*  COURSE DROPDOWNS  */
 
 function populateCourseDropdowns() {
     const filterSel = document.getElementById('filter-course');
@@ -47,7 +45,7 @@ function populateCourseDropdowns() {
         allCourses.map(c => `<option value="${c.id}">${escapeHtml(c.code)} — ${escapeHtml(c.name)}</option>`).join('');
 }
 
-/* ── RESET FILTERS ───────────────────────────────────────── */
+/*  RESET FILTERS  */
 
 function resetFilters() {
     document.getElementById('search-input').value    = '';
@@ -59,7 +57,7 @@ function resetFilters() {
     renderTasks();
 }
 
-/* ── RENDER TASKS ────────────────────────────────────────── */
+/*  RENDER TASKS  */
 
 function renderTasks() {
     const q        = document.getElementById('search-input').value.trim().toLowerCase();
@@ -143,7 +141,7 @@ function renderTasks() {
     }).join('');
 }
 
-/* ── TASK CRUD ───────────────────────────────────────────── */
+/*  TASK CRUD  */
 
 async function toggleTask(id, checked) {
     try {

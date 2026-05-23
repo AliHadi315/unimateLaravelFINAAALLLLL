@@ -2,7 +2,7 @@
    api.js  —  UniMate HTTP client
    ============================================================ */
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'http://127.0.0.1:8000/api';
 
 function getToken()    { return localStorage.getItem('um_token') || null; }
 function setToken(t)   { localStorage.setItem('um_token', t); }
@@ -14,17 +14,16 @@ function clearUser() { localStorage.removeItem('um_user'); localStorage.removeIt
 
 function requireAuth() {
     if (!getToken()) {
-        window.location.href = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
+        window.location.replace('/login');
         return false;
     }
     return true;
 }
 
 function logout() {
-    const dest = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
     try { apiFetch('/auth/logout', { method: 'POST' }); } catch(e) {}
     clearUser();
-    window.location.href = dest;
+    window.location.replace('/login');
 }
 
 function setLoading(btn, on, text) {
@@ -51,7 +50,7 @@ async function apiFetch(endpoint, options = {}) {
         const res  = await fetch(API_BASE + endpoint, config);
         if (res.status === 401) {
             removeToken();
-            window.location.href = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
+            window.location.replace('/login');
             return null;
         }
         const data = await res.json();
@@ -93,10 +92,10 @@ const CoursesAPI = {
 
 const TasksAPI = {
     list()        { return apiFetch('/tasks'); },
-    create(d)     { return apiFetch('/tasks',              { method: 'POST',   body: d }); },
-    update(id, d) { return apiFetch('/tasks/' + id,        { method: 'PUT',    body: d }); },
+    create(d)     { return apiFetch('/tasks',                   { method: 'POST',   body: d }); },
+    update(id, d) { return apiFetch('/tasks/' + id,             { method: 'PUT',    body: d }); },
     toggle(id)    { return apiFetch('/tasks/' + id + '/toggle', { method: 'PATCH' }); },
-    remove(id)    { return apiFetch('/tasks/' + id,        { method: 'DELETE' }); },
+    remove(id)    { return apiFetch('/tasks/' + id,             { method: 'DELETE' }); },
 };
 
 const ResourcesAPI = {

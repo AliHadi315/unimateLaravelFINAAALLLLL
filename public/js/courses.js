@@ -1,8 +1,6 @@
-/* ============================================================
-   courses.js
-   ============================================================ */
 
-/* ── STATE ───────────────────────────────────────────────── */
+
+/*  STATE  */
 
 let allCourses   = [];
 let allTasks     = [];
@@ -13,7 +11,7 @@ let sortAsc      = true;
 const PRIORITY_RANK  = { High: 0, Medium: 1, Low: 2 };
 const PRIORITY_BADGE = { High: 'badge-red', Medium: 'badge-amber', Low: 'badge-green' };
 
-/* ── INIT ────────────────────────────────────────────────── */
+/*  INIT  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
@@ -41,7 +39,7 @@ async function loadData() {
     }
 }
 
-/* ── TABS ────────────────────────────────────────────────── */
+/*  TABS  */
 
 function initDetailTabs() {
     const buttons = document.querySelectorAll('#modal-details .tab-btn');
@@ -56,7 +54,7 @@ function initDetailTabs() {
     });
 }
 
-/* ── SORT TOGGLE ─────────────────────────────────────────── */
+/*  SORT TOGGLE  */
 
 function toggleSortDir() {
     sortAsc = !sortAsc;
@@ -75,7 +73,7 @@ function resetFilters() {
     renderCourses();
 }
 
-/* ── RENDER COURSES ──────────────────────────────────────── */
+/*  RENDER COURSES  */
 
 function renderCourses() {
     const q      = document.getElementById('search-input').value.trim().toLowerCase();
@@ -135,7 +133,7 @@ function renderCourses() {
     }).join('');
 }
 
-/* ── COURSE MODAL RESET ──────────────────────────────────── */
+/*  COURSE MODAL RESET  */
 
 function bindCourseModalReset() {
     document.getElementById('add-course-btn').addEventListener('click', () => {
@@ -151,7 +149,7 @@ function bindCourseModalReset() {
     });
 }
 
-/* ── COURSE CRUD ─────────────────────────────────────────── */
+/*  COURSE CRUD  */
 
 async function saveCourse() {
     const v1 = validateRequired('c-name', 'err-c-name');
@@ -227,7 +225,7 @@ async function confirmDeleteCourse() {
     }
 }
 
-/* ── COURSE DETAILS ──────────────────────────────────────── */
+/*  COURSE DETAILS  */
 
 function openCourseDetails(id) {
     activeCourse = allCourses.find(x => x.id === id);
@@ -253,7 +251,7 @@ function openCourseDetails(id) {
     openModal('modal-details');
 }
 
-/* ── TASKS IN DETAIL ─────────────────────────────────────── */
+/*  TASKS IN DETAIL  */
 
 function renderDetailTasks() {
     if (!activeCourse) return;
@@ -335,7 +333,7 @@ async function deleteDetailTask(id) {
     }
 }
 
-/* ── TASK FORM ───────────────────────────────────────────── */
+/*  TASK FORM  */
 
 function openAddTaskModal() {
     document.getElementById('task-modal-title').textContent = 'Add Task';
@@ -401,7 +399,7 @@ async function saveTask() {
     }
 }
 
-/* ── RESOURCES ───────────────────────────────────────────── */
+/*  RESOURCES  */
 
 function bindResTypeChange() {
     const sel = document.getElementById('r-type');
@@ -527,7 +525,7 @@ async function deleteResource(id) {
     }
 }
 
-/* ── SKELETON ────────────────────────────────────────────── */
+/*  SKELETON  */
 
 function showGridSkeleton() {
     document.getElementById('courses-grid').innerHTML =

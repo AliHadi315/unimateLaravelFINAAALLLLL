@@ -1,6 +1,4 @@
-/* ============================================================
-   dashboard.js
-   ============================================================ */
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
@@ -10,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await refreshDashboard();
 });
 
-/* ── WELCOME MESSAGE ─────────────────────────────────────── */
+/*  WELCOME MESSAGE  */
 
 function setWelcomeMessage() {
     const user      = getUser();
@@ -23,7 +21,7 @@ function setWelcomeMessage() {
     welcomeEl.textContent = `${greeting}, ${firstName}!`;
 }
 
-/* ── REFRESH DASHBOARD ───────────────────────────────────── */
+/*  REFRESH DASHBOARD  */
 
 async function refreshDashboard() {
     showSkeletons();
@@ -43,7 +41,7 @@ async function refreshDashboard() {
     }
 }
 
-/* ── STATS ───────────────────────────────────────────────── */
+/*  STATS  */
 
 function renderStats(courses, tasks) {
     const now       = new Date();
@@ -58,7 +56,7 @@ function renderStats(courses, tasks) {
     document.getElementById('stat-overdue').textContent   = overdue;
 }
 
-/* ── PROGRESS ────────────────────────────────────────────── */
+/*  PROGRESS  */
 
 function renderProgress(tasks) {
     const total     = tasks.length;
@@ -72,7 +70,7 @@ function renderProgress(tasks) {
         : `${completed} of ${total} tasks completed`;
 }
 
-/* ── UPCOMING TASKS ──────────────────────────────────────── */
+/*  UPCOMING TASKS  */
 
 function renderUpcomingTasks(tasks, courses) {
     const now       = new Date();
@@ -125,7 +123,7 @@ function renderUpcomingTasks(tasks, courses) {
     }).join('');
 }
 
-/* ── SKELETONS ───────────────────────────────────────────── */
+/*  SKELETONS  */
 
 function showSkeletons() {
     ['stat-courses','stat-total','stat-completed','stat-pending','stat-overdue']

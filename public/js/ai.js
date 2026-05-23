@@ -1,8 +1,6 @@
-/* ============================================================
-   ai.js
-   ============================================================ */
 
-/* ── STATE ───────────────────────────────────────────────── */
+
+/*  STATE  */
 
 let messages         = [];
 let sessions         = [];
@@ -11,7 +9,7 @@ let activeSessionId  = null;
 let cachedTasks      = [];
 let cachedCourses    = [];
 
-/* ── INIT ────────────────────────────────────────────────── */
+/*  INIT  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
@@ -38,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-/* ── SESSIONS ────────────────────────────────────────────── */
+/*  SESSIONS  */
 
 function renderSessionsList() {
     const el = document.getElementById('sessions-list');
@@ -94,7 +92,7 @@ function clearChatUI() {
     container.appendChild(emptyEl);
 }
 
-/* ── SEND MESSAGE ────────────────────────────────────────── */
+/*  SEND MESSAGE  */
 
 function handleKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -136,7 +134,7 @@ function sendMessage() {
     }, delay);
 }
 
-/* ── AI RESPONSE ─────────────────────────────────────────── */
+/*  AI RESPONSE  */
 
 function generateResponse(text) {
     const q       = text.toLowerCase();
@@ -194,7 +192,7 @@ function generateResponse(text) {
     return defaults[Math.floor(Math.random() * defaults.length)];
 }
 
-/* ── RENDER MESSAGES ─────────────────────────────────────── */
+/*  RENDER MESSAGES  */
 
 function renderMessages() {
     const container = document.getElementById('chat-messages');
@@ -264,7 +262,7 @@ function scrollToBottom() {
     setTimeout(() => { el.scrollTop = el.scrollHeight; }, 50);
 }
 
-/* ── SAVE / DELETE SESSIONS ──────────────────────────────── */
+/*  SAVE / DELETE SESSIONS  */
 
 function saveSession() {
     if (messages.length === 0) { showToast('No messages to save.', 'error'); return; }

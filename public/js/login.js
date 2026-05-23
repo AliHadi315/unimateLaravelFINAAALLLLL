@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Redirect if already logged in
     if (getToken()) {
-        window.location.href = 'dashboard.html';
+        window.location.replace('/dashboard');
         return;
     }
 
@@ -61,7 +61,7 @@ async function handleLogin(e) {
 
     try {
         await Auth.login(uidInput.value.trim(), pwInput.value);
-        window.location.href = 'dashboard.html';
+        window.location.replace('/dashboard');
 
     } catch (err) {
         alertEl.textContent = err.message || 'Login failed. Please try again.';

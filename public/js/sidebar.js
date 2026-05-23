@@ -4,15 +4,15 @@
 
 function renderSidebar(activePage) {
     const navItems = [
-        { href: 'dashboard.html',  label: 'Dashboard',     icon: iconGrid() },
-        { href: 'courses.html',    label: 'My Courses',    icon: iconBook() },
-        { href: 'tasks.html',      label: 'Tasks & Exams', icon: iconTask() },
-        { href: 'statistics.html', label: 'Statistics',    icon: iconChart() },
-        { href: 'ai.html',         label: 'AI Assistant',  icon: iconAI() },
+        { href: '/dashboard',  label: 'Dashboard',     icon: iconGrid() },
+        { href: '/courses',    label: 'My Courses',    icon: iconBook() },
+        { href: '/tasks',      label: 'Tasks & Exams', icon: iconTask() },
+        { href: '/statistics', label: 'Statistics',    icon: iconChart() },
+        { href: '/ai',         label: 'AI Assistant',  icon: iconAI() },
     ];
 
     const navHTML = navItems.map(item => {
-        const isActive = item.href === activePage ? ' active' : '';
+        const isActive = window.location.pathname === item.href ? ' active' : '';
         return `<a href="${item.href}" class="nav-item${isActive}">${item.icon}<span>${item.label}</span></a>`;
     }).join('');
 

@@ -1,6 +1,5 @@
 /* ============================================================
    app.js — Shared UI utilities for UniMate
-   Data access is handled by api.js
    ============================================================ */
 
 /* ── TOAST ───────────────────────────────────────────────── */
@@ -80,13 +79,6 @@ function validateRequired(inputId, errorId) {
     return valid;
 }
 
-function clearValidation(inputId, errorId) {
-    const input = document.getElementById(inputId);
-    const errEl = document.getElementById(errorId);
-    if (input) input.style.borderColor = '';
-    if (errEl) errEl.classList.remove('show');
-}
-
 /* ── ESCAPE HTML ─────────────────────────────────────────── */
 
 function escapeHtml(str) {
@@ -108,7 +100,6 @@ function formatDate(dateStr) {
 /* ── POPULATE SIDEBAR USER ───────────────────────────────── */
 
 function populateSidebarUser() {
-    // getUser is defined in api.js — guard in case it's not loaded yet
     if (typeof getUser !== 'function') return;
     const user     = getUser();
     const nameEl   = document.getElementById('sidebar-user-name');
@@ -141,10 +132,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initTabs();
     populateSidebarUser();
-
-    const currentPage = window.location.pathname.split('/').pop();
-    document.querySelectorAll('.nav-item').forEach(link => {
-        const href = (link.getAttribute('href') || '').split('/').pop();
-        if (href === currentPage) link.classList.add('active');
-    });
 });

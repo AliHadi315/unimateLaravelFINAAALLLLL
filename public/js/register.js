@@ -4,7 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     if (getToken()) {
-        window.location.href = 'dashboard.html';
+        window.location.replace('/dashboard');
         return;
     }
 
@@ -114,7 +114,7 @@ async function handleRegister(e) {
             password:               pwInput.value,
             password_confirmation:  cpwInput.value,
         });
-        window.location.href = 'dashboard.html';
+        window.location.replace('/dashboard');
 
     } catch (err) {
         alertEl.textContent = err.message || 'Registration failed. Please try again.';
