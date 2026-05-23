@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register — UniMate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body class="auth-page">
+<a href="../index.html" class="back-home">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Home
+</a>
+<div class="auth-card">
+    <div class="auth-logo"><div class="logo-icon">UM</div><span class="logo-text">UniMate</span></div>
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-sub">Start organizing your academic life today.</p>
+    <div class="alert-box alert-error" id="alert-error"></div>
+    <form id="register-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="full-name">Full Name</label>
+                <input class="form-control" type="text" id="full-name" placeholder="Ali Sirbali" autocomplete="name"/>
+                <div class="form-error" id="err-name">Enter your full name.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="country">Country</label>
+                <input class="form-control" type="text" id="country" placeholder="Lebanon" autocomplete="country-name"/>
+                <div class="form-error" id="err-country">Enter your country.</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="uni-name">University Name</label>
+            <input class="form-control" type="text" id="uni-name" placeholder="Al Maaref University" autocomplete="organization"/>
+            <div class="form-error" id="err-uni">Enter your university name.</div>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="uni-id">University ID</label>
+            <input class="form-control" type="text" id="uni-id" placeholder="e.g. 20230001" autocomplete="username"/>
+            <div class="form-error" id="err-uid">Enter your University ID.</div>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-wrap">
+                <input class="form-control" type="password" id="password" placeholder="At least 6 characters" autocomplete="new-password"/>
+                <button type="button" class="eye-btn" id="toggle-pw" aria-label="Toggle password">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+            <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+            <div class="form-error" id="err-pw">Password must be at least 6 characters.</div>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="confirm-pw">Confirm Password</label>
+            <input class="form-control" type="password" id="confirm-pw" placeholder="Repeat password" autocomplete="new-password"/>
+            <div class="form-error" id="err-cpw">Passwords do not match.</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" id="submit-btn" style="justify-content:center;padding:11px;margin-top:4px">Create account</button>
+    </form>
+    <div class="auth-footer">Already have an account? <a href="login.html">Sign in</a></div>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/register.js"></script>
+</body>
+</html>

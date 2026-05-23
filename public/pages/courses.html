@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Courses — UniMate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" id="hamburger"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+                <div><div class="topbar-title">My Courses</div><div class="breadcrumb">Manage your enrolled courses</div></div>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-primary" id="add-course-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Course</button>
+            </div>
+        </header>
+        <main class="page-body">
+            <div class="toolbar">
+                <div class="search-bar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="form-control" type="text" id="search-input" placeholder="Search courses…" oninput="renderCourses()"/></div>
+                <select class="form-control" id="filter-semester" onchange="renderCourses()"><option value="All">All Semesters</option><option value="Fall 2025">Fall 2025</option><option value="Spring 2026">Spring 2026</option><option value="Summer 2026">Summer 2026</option></select>
+                <select class="form-control" id="sort-field" onchange="renderCourses()"><option value="name">Sort: Name</option><option value="code">Sort: Code</option><option value="instructor">Sort: Instructor</option></select>
+                <button class="btn btn-ghost btn-icon" onclick="toggleSortDir()" title="Toggle sort direction"><svg id="sort-dir-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></button>
+                <button class="btn btn-ghost btn-icon" onclick="resetFilters()" title="Reset filters"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.68"/></svg></button>
+            </div>
+            <div id="courses-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px"></div>
+        </main>
+    </div>
+</div>
+
+<!-- Add/Edit Course -->
+<div class="modal-overlay" id="modal-course">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title" id="course-modal-title">Add Course</h3><button class="modal-close" onclick="closeModal('modal-course')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Course Name *</label><input class="form-control" id="c-name" placeholder="Web Programming"/><div class="form-error" id="err-c-name">Required.</div></div>
+            <div class="form-group"><label class="form-label">Course Code *</label><input class="form-control" id="c-code" placeholder="CSC400"/><div class="form-error" id="err-c-code">Required.</div></div>
+        </div>
+        <div class="form-group"><label class="form-label">Instructor *</label><input class="form-control" id="c-inst" placeholder="Dr. Smith"/><div class="form-error" id="err-c-inst">Required.</div></div>
+        <div class="form-group"><label class="form-label">Semester</label><select class="form-control" id="c-semester"><option value="Fall 2025">Fall 2025</option><option value="Spring 2026" selected>Spring 2026</option><option value="Summer 2026">Summer 2026</option></select></div>
+        <input type="hidden" id="c-edit-id"/>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-course')">Cancel</button><button class="btn btn-primary" onclick="saveCourse()">Save</button></div>
+    </div>
+</div>
+
+<!-- Delete Course -->
+<div class="modal-overlay" id="modal-delete-course">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title">Delete Course</h3><button class="modal-close" onclick="closeModal('modal-delete-course')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <p class="confirm-text">Are you sure you want to delete <strong id="delete-course-name"></strong>? All tasks and resources will also be removed.</p>
+        <input type="hidden" id="delete-course-id"/>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-delete-course')">Cancel</button><button class="btn btn-danger" onclick="confirmDeleteCourse()">Delete</button></div>
+    </div>
+</div>
+
+<!-- Course Details -->
+<div class="modal-overlay modal-top" id="modal-details">
+    <div class="modal modal-wide">
+        <div class="modal-header">
+            <div><h3 class="modal-title" id="detail-course-name">Course</h3><div class="text-sm text-muted" id="detail-course-code"></div></div>
+            <button class="modal-close" onclick="closeModal('modal-details')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="tabs"><button class="tab-btn active">Tasks</button><button class="tab-btn">Resources</button></div>
+        <div class="tab-panel active" id="tab-tasks">
+            <div class="toolbar" style="margin-bottom:14px">
+                <select class="form-control" id="detail-task-filter" onchange="renderDetailTasks()"><option value="all">All</option><option value="pending">Pending</option><option value="completed">Completed</option><option value="overdue">Overdue</option><option value="today">Today</option></select>
+                <select class="form-control" id="detail-task-sort" onchange="renderDetailTasks()"><option value="due_date">Due Date</option><option value="priority">Priority</option><option value="title">Title</option></select>
+                <button class="btn btn-primary btn-sm" onclick="openAddTaskModal()">+ Add Task</button>
+            </div>
+            <div id="detail-tasks-list"></div>
+        </div>
+        <div class="tab-panel" id="tab-resources">
+            <div class="toolbar" style="margin-bottom:14px">
+                <select class="form-control" id="detail-res-filter" onchange="renderDetailResources()"><option value="all">All Types</option><option value="Note">Note</option><option value="Link">Link</option><option value="File">File</option></select>
+                <button class="btn btn-primary btn-sm" onclick="openAddResourceModal()">+ Add Resource</button>
+            </div>
+            <div id="detail-resources-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Form -->
+<div class="modal-overlay" id="modal-task">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title" id="task-modal-title">Add Task</h3><button class="modal-close" onclick="closeModal('modal-task')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="form-group"><label class="form-label">Task Title *</label><input class="form-control" id="t-title" placeholder="e.g. Midterm Exam"/><div class="form-error" id="err-t-title">Required.</div></div>
+        <div class="form-row">
+            <div class="form-group"><label class="form-label">Type</label><select class="form-control" id="t-type"><option value="Assignment">Assignment</option><option value="Exam">Exam</option><option value="Project">Project</option></select></div>
+            <div class="form-group"><label class="form-label">Priority</label><select class="form-control" id="t-priority"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Due Date *</label><input class="form-control" type="date" id="t-due"/><div class="form-error" id="err-t-due">Required.</div></div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="t-completed" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)"/><label for="t-completed" class="form-label" style="margin:0;cursor:pointer">Mark as completed</label></div>
+        <input type="hidden" id="t-edit-id"/>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-task')">Cancel</button><button class="btn btn-primary" onclick="saveTask()">Save Task</button></div>
+    </div>
+</div>
+
+<!-- Resource Form -->
+<div class="modal-overlay" id="modal-resource">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title" id="res-modal-title">Add Resource</h3><button class="modal-close" onclick="closeModal('modal-resource')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="form-group"><label class="form-label">Title *</label><input class="form-control" id="r-title" placeholder="e.g. Lecture Notes Week 3"/><div class="form-error" id="err-r-title">Required.</div></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-control" id="r-type"><option value="Note">Note</option><option value="Link">Link</option><option value="File">File</option></select></div>
+        <div class="form-group"><label class="form-label" id="r-value-label">Note Content *</label><textarea class="form-control" id="r-value" rows="4" placeholder="Write your note here…"></textarea><div class="form-error" id="err-r-value">Required.</div></div>
+        <input type="hidden" id="r-edit-id"/>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-resource')">Cancel</button><button class="btn btn-primary" onclick="saveResource()">Save Resource</button></div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="../js/app.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/courses.js"></script>
+</body>
+</html>
