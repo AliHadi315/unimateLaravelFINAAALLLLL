@@ -2,11 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/',          fn() => file_get_contents(public_path('index.html')));
-Route::get('/login',     fn() => file_get_contents(public_path('pages/login.html')))->name('login');
-Route::get('/register',  fn() => file_get_contents(public_path('pages/register.html')));
-Route::get('/dashboard', fn() => file_get_contents(public_path('pages/dashboard.html')));
-Route::get('/courses',   fn() => file_get_contents(public_path('pages/courses.html')));
-Route::get('/tasks',     fn() => file_get_contents(public_path('pages/tasks.html')));
-Route::get('/statistics',fn() => file_get_contents(public_path('pages/statistics.html')));
-Route::get('/ai',        fn() => file_get_contents(public_path('pages/ai.html')));
+function servePage(string $file) {
+    return response(file_get_contents(public_path($file)), 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+}
+
+Route::get('/',          fn() => servePage('index.html'));
+Route::get('/login',     fn() => servePage('pages/login.html'))->name('login');
+Route::get('/register',  fn() => servePage('pages/register.html'));
+Route::get('/dashboard', fn() => servePage('pages/dashboard.html'));
+Route::get('/courses',   fn() => servePage('pages/courses.html'));
+Route::get('/tasks',     fn() => servePage('pages/tasks.html'));
+Route::get('/statistics',fn() => servePage('pages/statistics.html'));
+Route::get('/ai',        fn() => servePage('pages/ai.html'));

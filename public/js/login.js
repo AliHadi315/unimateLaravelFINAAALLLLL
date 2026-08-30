@@ -1,6 +1,4 @@
-/* ============================================================
-   login.js
-   ============================================================ */
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Redirect if already logged in
@@ -14,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('login-form').addEventListener('submit', handleLogin);
 });
 
-/* ── PASSWORD TOGGLE ─────────────────────────────────────── */
+/* ] PASSWORD TOGGLE  */
 
 function initPasswordToggle(btnId, inputId, iconId) {
     const btn   = document.getElementById(btnId);
@@ -39,7 +37,7 @@ function initPasswordToggle(btnId, inputId, iconId) {
     });
 }
 
-/* ── LOGIN HANDLER ───────────────────────────────────────── */
+/*  LOGIN HANDLER  */
 
 async function handleLogin(e) {
     e.preventDefault();

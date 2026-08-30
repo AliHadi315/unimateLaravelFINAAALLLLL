@@ -528,6 +528,5 @@ async function deleteResource(id) {
 /*  SKELETON  */
 
 function showGridSkeleton() {
-    document.getElementById('courses-grid').innerHTML =
-        `<div class="text-sm text-muted" style="grid-column:1/-1;padding:40px;text-align:center">Loading courses…</div>`;
+    document.getElementById('courses-grid').innerHTML = skeletonCards(6);
 }

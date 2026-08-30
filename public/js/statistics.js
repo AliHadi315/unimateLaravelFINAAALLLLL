@@ -3,6 +3,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
     if (!requireAuth()) return;
     renderSidebar('statistics.html');
+
+    // Show skeletons while loading
+    ['s-total','s-completed','s-pending','s-overdue'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = skeletonStat();
+    });
+    document.getElementById('type-breakdown').innerHTML = skeletonRows(3);
+    document.getElementById('course-progress').innerHTML = skeletonRows(4);
+
     await renderStats();
 });
 

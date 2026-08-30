@@ -129,8 +129,7 @@ function showSkeletons() {
     ['stat-courses','stat-total','stat-completed','stat-pending','stat-overdue']
         .forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.textContent = '—';
+            if (el) el.innerHTML = skeletonStat();
         });
-    document.getElementById('upcoming-list').innerHTML =
-        `<div class="text-sm text-muted" style="padding:20px 0;text-align:center">Loading…</div>`;
+    document.getElementById('upcoming-list').innerHTML = skeletonRows(4);
 }

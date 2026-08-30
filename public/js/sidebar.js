@@ -1,6 +1,4 @@
-/* ============================================================
-   sidebar.js — Renders the shared sidebar navigation
-   ============================================================ */
+
 
 function renderSidebar(activePage) {
     const navItems = [

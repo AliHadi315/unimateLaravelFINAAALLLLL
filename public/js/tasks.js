@@ -15,8 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadData() {
-    document.getElementById('tasks-list').innerHTML =
-        `<div class="text-sm text-muted" style="padding:40px;text-align:center">Loading tasks…</div>`;
+    document.getElementById('tasks-list').innerHTML = skeletonRows(5);
 
     try {
         const [tasks, courses] = await Promise.all([

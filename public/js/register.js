@@ -1,6 +1,3 @@
-/* ============================================================
-   register.js
-   ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
     if (getToken()) {
@@ -14,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('register-form').addEventListener('submit', handleRegister);
 });
 
-/* ── PASSWORD TOGGLE ─────────────────────────────────────── */
+/*  PASSWORD TOGGLE  */
 
 function initPasswordToggle() {
     const btn   = document.getElementById('toggle-pw');
@@ -38,7 +35,7 @@ function initPasswordToggle() {
     });
 }
 
-/* ── STRENGTH METER ──────────────────────────────────────── */
+/*  STRENGTH METER  */
 
 function initStrengthMeter() {
     const input = document.getElementById('password');
@@ -61,7 +58,7 @@ function initStrengthMeter() {
     });
 }
 
-/* ── REGISTER HANDLER ────────────────────────────────────── */
+/*  REGISTER HANDLER  */
 
 async function handleRegister(e) {
     e.preventDefault();

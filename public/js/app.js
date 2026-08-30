@@ -1,8 +1,6 @@
-/* ============================================================
-   app.js — Shared UI utilities for UniMate
-   ============================================================ */
 
-/* ── TOAST ───────────────────────────────────────────────── */
+
+/*  TOAST  */
 
 function showToast(msg, type = 'default') {
     let container = document.getElementById('toast-container');
@@ -19,7 +17,25 @@ function showToast(msg, type = 'default') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-/* ── MODAL ───────────────────────────────────────────────── */
+/*  SKELETON LOADERS  */
+
+function skeletonStat() {
+    return '<div class="skeleton skeleton-stat"></div>';
+}
+
+function skeletonRows(count = 3) {
+    return Array.from({ length: count }, () =>
+        '<div class="skeleton skeleton-row" style="margin-bottom:8px"></div>'
+    ).join('');
+}
+
+function skeletonCards(count = 4) {
+    return Array.from({ length: count }, () =>
+        '<div class="skeleton skeleton-card"></div>'
+    ).join('');
+}
+
+/*  MODAL  */
 
 function openModal(id) {
     const el = document.getElementById(id);
@@ -31,7 +47,7 @@ function closeModal(id) {
     if (el) el.classList.remove('open');
 }
 
-/* ── SIDEBAR TOGGLE ──────────────────────────────────────── */
+/*  SIDEBAR TOGGLE  */
 
 function initSidebar() {
     const ham     = document.getElementById('hamburger');
@@ -51,7 +67,7 @@ function initSidebar() {
     }
 }
 
-/* ── TABS ────────────────────────────────────────────────── */
+/*  TABS  */
 
 function initTabs(containerSelector) {
     document.querySelectorAll(containerSelector || '.tab-container').forEach(container => {
@@ -68,7 +84,7 @@ function initTabs(containerSelector) {
     });
 }
 
-/* ── FORM VALIDATION ─────────────────────────────────────── */
+/*  FORM VALIDATION  */
 
 function validateRequired(inputId, errorId) {
     const input = document.getElementById(inputId);
@@ -79,7 +95,7 @@ function validateRequired(inputId, errorId) {
     return valid;
 }
 
-/* ── ESCAPE HTML ─────────────────────────────────────────── */
+/*  ESCAPE HTML  */
 
 function escapeHtml(str) {
     return String(str)
@@ -89,7 +105,7 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-/* ── DATE FORMAT ─────────────────────────────────────────── */
+/*  DATE FORMAT  */
 
 function formatDate(dateStr) {
     if (!dateStr) return '—';
@@ -97,7 +113,7 @@ function formatDate(dateStr) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-/* ── POPULATE SIDEBAR USER ───────────────────────────────── */
+/*  POPULATE SIDEBAR USER  */
 
 function populateSidebarUser() {
     if (typeof getUser !== 'function') return;
@@ -111,7 +127,7 @@ function populateSidebarUser() {
     if (avatarEl) avatarEl.textContent = (user.fullName || 'U')[0].toUpperCase();
 }
 
-/* ── CLOSE MODAL ON OVERLAY / ESCAPE ─────────────────────── */
+/*  CLOSE MODAL ON OVERLAY / ESCAPE  */
 
 document.addEventListener('click', e => {
     if (e.target.classList.contains('modal-overlay')) {
@@ -126,7 +142,7 @@ document.addEventListener('keydown', e => {
     }
 });
 
-/* ── INIT ────────────────────────────────────────────────── */
+/*  INIT  */
 
 document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
