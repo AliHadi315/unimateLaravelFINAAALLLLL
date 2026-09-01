@@ -15,6 +15,8 @@ class Course extends Model
         'code',
         'instructor',
         'semester',
+        'grade',
+        'credits',
     ];
 
     /*  Relationships  */

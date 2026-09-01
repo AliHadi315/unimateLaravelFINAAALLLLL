@@ -105,6 +105,11 @@ const ResourcesAPI = {
     remove(id)    { return apiFetch('/resources/' + id, { method: 'DELETE' }); },
 };
 
+const AiAPI = {
+    status()       { return apiFetch('/ai/status'); },
+    chat(messages) { return apiFetch('/ai/chat', { method: 'POST', body: { messages } }); },
+};
+
 const ChatAPI = {
     list()        { return apiFetch('/chat-sessions'); },
     create(d)     { return apiFetch('/chat-sessions',       { method: 'POST',   body: d }); },

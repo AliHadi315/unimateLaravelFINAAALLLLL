@@ -5,8 +5,67 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderSidebar('dashboard.html');
     setWelcomeMessage();
+    updateRemindersButton();
     await refreshDashboard();
 });
+
+/*  DEADLINE REMINDERS (browser notifications)  */
+
+function remindersOn() {
+    return localStorage.getItem('um_notify') === '1'
+        && 'Notification' in window
+        && Notification.permission === 'granted';
+}
+
+function updateRemindersButton() {
+    const label = document.getElementById('reminders-label');
+    if (label) label.textContent = remindersOn() ? 'Reminders on' : 'Reminders';
+}
+
+async function toggleReminders() {
+    if (!('Notification' in window)) {
+        showToast('This browser does not support notifications.', 'error');
+        return;
+    }
+
+    if (remindersOn()) {
+        localStorage.setItem('um_notify', '0');
+        updateRemindersButton();
+        showToast('Deadline reminders turned off.');
+        return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+        showToast('Notifications are blocked in your browser settings.', 'error');
+        return;
+    }
+
+    localStorage.setItem('um_notify', '1');
+    localStorage.removeItem('um_notify_last'); // notify right away
+    updateRemindersButton();
+    showToast('You\'ll get a reminder when tasks are due.', 'success');
+    refreshDashboard();
+}
+
+// Show at most one summary notification per day
+function notifyDueTasks(tasks) {
+    if (!remindersOn()) return;
+
+    const today = new Date().toDateString();
+    if (localStorage.getItem('um_notify_last') === today) return;
+
+    const dueToday = tasks.filter(t => !t.is_completed && daysUntil(t.due_date) === 0).length;
+    const overdue  = tasks.filter(isOverdue).length;
+    if (dueToday === 0 && overdue === 0) return;
+
+    const parts = [];
+    if (dueToday) parts.push(`${dueToday} task${dueToday > 1 ? 's' : ''} due today`);
+    if (overdue)  parts.push(`${overdue} overdue`);
+
+    new Notification('UniMate — deadlines', { body: parts.join(', ') + '.' });
+    localStorage.setItem('um_notify_last', today);
+}
 
 /*  WELCOME MESSAGE  */
 
@@ -35,6 +94,7 @@ async function refreshDashboard() {
         renderStats(courses, tasks);
         renderProgress(tasks);
         renderUpcomingTasks(tasks, courses);
+        notifyDueTasks(tasks);
 
     } catch (err) {
         showToast('Failed to load dashboard data.', 'error');

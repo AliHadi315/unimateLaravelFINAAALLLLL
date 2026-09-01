@@ -138,7 +138,10 @@ function renderCourses() {
                     ${escapeHtml(c.instructor)}
                 </div>
                 <div class="course-card-footer">
-                    <span class="badge badge-gray">${escapeHtml(c.semester)}</span>
+                    <div class="flex-center gap-2">
+                        <span class="badge badge-gray">${escapeHtml(c.semester)}</span>
+                        ${c.grade ? `<span class="badge badge-blue">${escapeHtml(c.grade)}</span>` : ''}
+                    </div>
                     <div class="course-card-actions" onclick="event.stopPropagation()">
                         <button class="btn btn-ghost btn-sm" onclick="editCourse(${c.id})">Edit</button>
                         <button class="btn btn-ghost btn-sm text-danger" onclick="promptDeleteCourse(${c.id}, '${escapeHtml(c.name).replace(/'/g,"\\'")}')">Delete</button>
@@ -158,6 +161,8 @@ function bindCourseModalReset() {
             document.getElementById(id).style.borderColor = '';
         });
         document.getElementById('c-semester').value = 'Spring 2026';
+        document.getElementById('c-credits').value  = '';
+        document.getElementById('c-grade').value    = '';
         document.getElementById('c-edit-id').value  = '';
         document.querySelectorAll('#modal-course .form-error').forEach(e => e.classList.remove('show'));
         openModal('modal-course');
@@ -172,11 +177,14 @@ async function saveCourse() {
     const v3 = validateRequired('c-inst', 'err-c-inst');
     if (!v1 || !v2 || !v3) return;
 
+    const credits = document.getElementById('c-credits').value;
     const data = {
         name:       document.getElementById('c-name').value.trim(),
         code:       document.getElementById('c-code').value.trim(),
         instructor: document.getElementById('c-inst').value.trim(),
         semester:   document.getElementById('c-semester').value,
+        grade:      document.getElementById('c-grade').value || null,
+        credits:    credits ? parseInt(credits) : null,
     };
 
     const editId = document.getElementById('c-edit-id').value;
@@ -212,6 +220,8 @@ function editCourse(id) {
     document.getElementById('c-code').value     = c.code;
     document.getElementById('c-inst').value     = c.instructor;
     document.getElementById('c-semester').value = c.semester;
+    document.getElementById('c-credits').value  = c.credits || '';
+    document.getElementById('c-grade').value    = c.grade || '';
     document.getElementById('c-edit-id').value  = c.id;
     openModal('modal-course');
 }

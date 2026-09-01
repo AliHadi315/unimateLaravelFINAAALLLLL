@@ -24,6 +24,10 @@ function renderSidebar(activePage) {
             ${navHTML}
         </nav>
         <div class="sidebar-footer">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-toggle-icon"></span>
+                <span class="theme-toggle-label">Dark mode</span>
+            </button>
             <div class="sidebar-user" onclick="logout()" title="Log out">
                 <div class="avatar" id="sidebar-avatar">U</div>
                 <div class="avatar-info">
@@ -41,7 +45,11 @@ function renderSidebar(activePage) {
         </div>`;
 
     const el = document.getElementById('sidebar');
-    if (el) { el.innerHTML = html; populateSidebarUser(); }
+    if (el) {
+        el.innerHTML = html;
+        populateSidebarUser();
+        el.querySelectorAll('.theme-toggle').forEach(updateThemeIcon);
+    }
 }
 
 function iconGrid() {

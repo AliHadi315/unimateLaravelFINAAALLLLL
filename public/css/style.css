@@ -1,5 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
 :root{--blue:#2563EB;--blue-dark:#1D4ED8;--blue-light:#EFF6FF;--blue-mid:#BFDBFE;--red:#DC2626;--red-light:#FEF2F2;--amber:#F59E0B;--amber-light:#FFFBEB;--green:#16A34A;--green-light:#F0FDF4;--bg:#F8FAFC;--surface:#fff;--border:#E5E7EB;--border-2:#D1D5DB;--text:#111827;--text-2:#4B5563;--text-3:#9CA3AF;--sidebar-w:240px;--header-h:60px;--radius-sm:8px;--radius:12px;--radius-lg:18px;--radius-xl:24px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.10);--shadow-lg:0 8px 32px rgba(0,0,0,.12);--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--t:.18s ease;--gradient-blue:linear-gradient(135deg,#2563EB 0%,#7C3AED 100%);--gradient-cta:linear-gradient(135deg,#1D4ED8 0%,#7C3AED 50%,#2563EB 100%)}
+/* ===== DARK THEME ===== */
+[data-theme="dark"]{
+  --blue:#3B82F6;--blue-dark:#2563EB;--blue-light:rgba(59,130,246,.16);--blue-mid:#1D4ED8;
+  --red:#F87171;--red-light:rgba(239,68,68,.16);
+  --amber:#FBBF24;--amber-light:rgba(245,158,11,.16);
+  --green:#4ADE80;--green-light:rgba(34,197,94,.16);
+  --bg:#0F172A;--surface:#1E293B;--border:#334155;--border-2:#475569;
+  --text:#F1F5F9;--text-2:#CBD5E1;--text-3:#7C8BA1;
+  --shadow:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 16px rgba(0,0,0,.45);--shadow-lg:0 8px 32px rgba(0,0,0,.55);
+}
+[data-theme="dark"] .badge-gray{background:#334155;color:var(--text-2)}
+[data-theme="dark"] .topbar,[data-theme="dark"] .landing-nav{background:rgba(15,23,42,.92)}
+[data-theme="dark"] .toast{background:#334155}
+[data-theme="dark"] .toast.success{background:#15803D}
+[data-theme="dark"] .toast.error{background:#B91C1C}
+[data-theme="dark"] .skeleton{background:linear-gradient(90deg,var(--border) 25%,#3E4C63 37%,var(--border) 63%);background-size:800px 100%}
+[data-theme="dark"] .alert-error{border-color:#7F1D1D}
+[data-theme="dark"] .btn-cta{background:var(--surface);color:var(--text)}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:15px;scroll-behavior:smooth}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
@@ -39,6 +58,10 @@ p{color:var(--text-2)}a{color:var(--blue);text-decoration:none}a:hover{text-deco
 .nav-item.active{background:var(--blue-light);color:var(--blue);font-weight:600}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--blue);border-radius:0 3px 3px 0}
 .sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
+.theme-toggle{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:none;background:none;border-radius:var(--radius-sm);color:var(--text-2);font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--t);margin-bottom:4px;text-align:left}
+.theme-toggle:hover{background:var(--bg);color:var(--text)}
+.theme-toggle-icon{display:flex;align-items:center}.theme-toggle-icon svg{width:16px;height:16px}
+.theme-toggle-compact{width:auto;margin:0;padding:8px;border-radius:50%}
 .sidebar-user{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--t)}
 .sidebar-user:hover{background:var(--red-light)}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--gradient-blue);color:#fff;font-family:var(--font-head);font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(37,99,235,.2)}
@@ -312,6 +335,28 @@ select.form-control{cursor:pointer}textarea.form-control{resize:vertical;min-hei
 .course-card-instructor svg{width:13px;height:13px;flex-shrink:0}
 .course-card-footer{display:flex;align-items:center;justify-content:space-between}
 .course-card-actions{display:flex;gap:6px}
+
+/* CALENDAR */
+.view-switch{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-left:auto}
+.view-btn{padding:7px 14px;border:none;background:var(--surface);color:var(--text-2);font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--t)}
+.view-btn.active{background:var(--blue);color:#fff}
+.cal-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.cal-title{font-family:var(--font-head);font-weight:700;font-size:1.05rem;flex:1}
+.cal-scroll{overflow-x:auto}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;min-width:640px}
+.cal-dow{text-align:center;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);padding:4px 0}
+.cal-cell{border:1px solid var(--border);border-radius:var(--radius-sm);min-height:88px;padding:6px;background:var(--surface);display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.cal-cell.other{opacity:.4}
+.cal-cell.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.cal-day-num{font-size:.72rem;font-weight:700;color:var(--text-2)}
+.cal-cell.today .cal-day-num{color:var(--blue)}
+.cal-chip{font-size:.68rem;font-weight:600;padding:2px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:transform .15s}
+.cal-chip:hover{transform:translateX(1px)}
+.cal-chip.p-high{background:var(--red-light);color:var(--red)}
+.cal-chip.p-medium{background:var(--amber-light);color:var(--amber)}
+.cal-chip.p-low{background:var(--green-light);color:var(--green)}
+.cal-chip.done{opacity:.5;text-decoration:line-through}
+.cal-more{font-size:.66rem;color:var(--text-3);font-weight:600}
 
 /* STATISTICS */
 .course-progress-row{padding:16px 0;transition:background .15s}

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSidebar('statistics.html');
 
     // Show skeletons while loading
-    ['s-total','s-completed','s-pending','s-overdue'].forEach(id => {
+    ['s-total','s-completed','s-pending','s-overdue','s-gpa'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = skeletonStat();
     });
@@ -41,12 +41,38 @@ async function renderStats() {
             ? `${completed} of ${total} tasks completed`
             : 'No tasks yet.';
 
+        renderGPA(courses);
         renderTypeBreakdown(tasks);
         renderCourseProgress(tasks, courses);
 
     } catch (err) {
         showToast('Failed to load statistics.', 'error');
     }
+}
+
+/*  GPA  */
+
+const GRADE_POINTS = {
+    'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+    'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0,
+};
+
+function renderGPA(courses) {
+    const graded = courses.filter(c => c.grade in GRADE_POINTS);
+
+    let points = 0, credits = 0;
+    graded.forEach(c => {
+        const cr = c.credits || 3; // assume 3 credits when not specified
+        points  += GRADE_POINTS[c.grade] * cr;
+        credits += cr;
+    });
+
+    document.getElementById('s-gpa').textContent = credits
+        ? (points / credits).toFixed(2)
+        : '—';
+    document.getElementById('s-gpa-label').textContent = credits
+        ? `GPA · ${graded.length} course${graded.length > 1 ? 's' : ''} graded`
+        : 'GPA — add grades on Courses';
 }
 
 /*  BREAKDOWN BY TYPE  */

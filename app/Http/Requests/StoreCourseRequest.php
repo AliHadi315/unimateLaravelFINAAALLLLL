@@ -18,6 +18,8 @@ class StoreCourseRequest extends FormRequest
             'code'       => ['required', 'string', 'max:50'],
             'instructor' => ['required', 'string', 'max:255'],
             'semester'   => ['required', 'string', 'max:50'],
+            'grade'      => ['nullable', 'in:A,A-,B+,B,B-,C+,C,C-,D+,D,F'],
+            'credits'    => ['nullable', 'integer', 'min:1', 'max:12'],
         ];
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatSessionController;
 use App\Http\Controllers\Api\CourseController;
@@ -18,4 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('resources',      ResourceController::class);
     Route::apiResource('chat-sessions',  ChatSessionController::class);
     Route::patch('tasks/{task}/toggle',  [TaskController::class, 'toggle']);
+    Route::get('ai/status',              [AiChatController::class, 'status']);
+    Route::post('ai/chat',               [AiChatController::class, 'chat']);
 });

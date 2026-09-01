@@ -31,8 +31,21 @@
                 <select class="form-control" id="filter-course" onchange="renderTasks()"><option value="all">All Courses</option></select>
                 <select class="form-control" id="sort-field" onchange="renderTasks()"><option value="due_date">Sort: Due Date</option><option value="priority">Sort: Priority</option><option value="title">Sort: Title</option></select>
                 <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Reset</button>
+                <div class="view-switch">
+                    <button class="view-btn active" id="view-list-btn" onclick="setView('list')">List</button>
+                    <button class="view-btn" id="view-cal-btn" onclick="setView('calendar')">Calendar</button>
+                </div>
             </div>
-            <div class="card"><div id="tasks-list"></div></div>
+            <div class="card" id="list-view"><div id="tasks-list"></div></div>
+            <div class="card hidden" id="calendar-view">
+                <div class="cal-header">
+                    <div class="cal-title" id="cal-title"></div>
+                    <button class="btn btn-ghost btn-sm" onclick="calToday()">Today</button>
+                    <button class="btn btn-ghost btn-icon" onclick="calShift(-1)" title="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg></button>
+                    <button class="btn btn-ghost btn-icon" onclick="calShift(1)" title="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></button>
+                </div>
+                <div class="cal-scroll"><div class="cal-grid" id="cal-grid"></div></div>
+            </div>
         </main>
     </div>
 </div>

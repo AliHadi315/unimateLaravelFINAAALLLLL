@@ -16,13 +16,16 @@ The frontend talks to the backend through a JSON API under `/api`.
 ## Features
 
 - Register / login with your university ID
-- Manage courses (code, instructor, semester)
+- Manage courses (code, instructor, semester, optional credits and grade)
 - Track assignments, exams, and projects with due dates, priorities, and completion
+- List and monthly calendar views for tasks
 - Store notes, links, and file references per course
-- Dashboard with overall progress and upcoming deadlines
-- Statistics page with per-course and per-type breakdowns
+- Dashboard with overall progress, upcoming deadlines, and optional browser
+  reminders for tasks due today
+- Statistics page with per-course and per-type breakdowns plus a GPA calculator
 - Study assistant that answers questions about your own tasks and deadlines,
   with saveable chat sessions
+- Light and dark themes
 
 ## Getting started
 
@@ -38,6 +41,19 @@ Then open http://localhost:8000 and create an account.
 
 The default database is SQLite, so no database server is needed — the migrate
 command creates `database/database.sqlite` automatically.
+
+### Optional: real AI for the study assistant
+
+The study assistant works offline out of the box with built-in answers about
+your tasks and deadlines. To power it with Claude instead, add an Anthropic API
+key to `.env`:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+The assistant automatically uses the real model when a key is present and falls
+back to the built-in responses when it isn't (or when the API call fails).
 
 ## Project layout
 

@@ -8,6 +8,7 @@ let isLoading        = false;
 let activeSessionId  = null;
 let cachedTasks      = [];
 let cachedCourses    = [];
+let aiEnabled        = false; // true when the server has an Anthropic API key configured
 
 /*  INIT  */
 
@@ -34,6 +35,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
         showToast('Failed to load data.', 'error');
     }
+
+    // Check whether the backend has a real AI configured
+    try {
+        const s = await AiAPI.status();
+        aiEnabled = !!(s && s.enabled);
+    } catch (e) { aiEnabled = false; }
 });
 
 /*  SESSIONS  */
@@ -118,7 +125,7 @@ function autoResize(el) {
     el.style.height = Math.min(el.scrollHeight, 140) + 'px';
 }
 
-function sendMessage() {
+async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text  = input.value.trim();
     if (!text || isLoading) return;
@@ -134,16 +141,30 @@ function sendMessage() {
     document.getElementById('send-btn').disabled = true;
     showTypingIndicator();
 
-    const delay = 700 + Math.random() * 1000;
-    setTimeout(() => {
-        const response = generateResponse(text);
-        hideTypingIndicator();
-        messages.push({ role: 'ai', content: response, time: new Date().toISOString() });
-        isLoading = false;
-        document.getElementById('send-btn').disabled = false;
-        renderMessages();
-        scrollToBottom();
-    }, delay);
+    let response = null;
+
+    // Real AI when the server has an API key; otherwise the built-in responder
+    if (aiEnabled) {
+        try {
+            const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+            const r = await AiAPI.chat(history);
+            response = r && r.reply;
+        } catch (e) {
+            response = null; // fall back below
+        }
+    }
+
+    if (!response) {
+        await new Promise(res => setTimeout(res, 700 + Math.random() * 1000));
+        response = generateResponse(text);
+    }
+
+    hideTypingIndicator();
+    messages.push({ role: 'ai', content: response, time: new Date().toISOString() });
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+    renderMessages();
+    scrollToBottom();
 }
 
 /*  AI RESPONSE  */

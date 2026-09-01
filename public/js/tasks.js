@@ -2,6 +2,8 @@
 
 let allTasks   = [];
 let allCourses = [];
+let currentView = 'list';
+let calYear, calMonth; // currently displayed calendar month
 
 const PRIORITY_RANK  = { High: 0, Medium: 1, Low: 2 };
 const PRIORITY_BADGE = { High: 'badge-red', Medium: 'badge-amber', Low: 'badge-green' };
@@ -58,18 +60,14 @@ function resetFilters() {
 
 /*  RENDER TASKS  */
 
-function renderTasks() {
+function getFilteredTasks() {
     const q        = document.getElementById('search-input').value.trim().toLowerCase();
     const status   = document.getElementById('filter-status').value;
     const type     = document.getElementById('filter-type').value;
     const priority = document.getElementById('filter-priority').value;
     const courseId = document.getElementById('filter-course').value;
-    const sortBy   = document.getElementById('sort-field').value;
 
-    const courseMap = {};
-    allCourses.forEach(c => { courseMap[c.id] = c; });
-
-    let tasks = allTasks.filter(t => {
+    return allTasks.filter(t => {
         const days = daysUntil(t.due_date);
         if (q && !t.title.toLowerCase().includes(q))                return false;
         if (type !== 'all'     && t.type !== type)                   return false;
@@ -82,6 +80,20 @@ function renderTasks() {
         if (status === 'thisWeek')  return days >= 0 && days <= 7;
         return true;
     });
+}
+
+function renderTasks() {
+    if (currentView === 'calendar') { renderCalendar(); return; }
+    renderList();
+}
+
+function renderList() {
+    const sortBy = document.getElementById('sort-field').value;
+
+    const courseMap = {};
+    allCourses.forEach(c => { courseMap[c.id] = c; });
+
+    let tasks = getFilteredTasks();
 
     tasks.sort((a, b) => {
         if (sortBy === 'due_date') return parseDate(a.due_date) - parseDate(b.due_date);
@@ -135,6 +147,79 @@ function renderTasks() {
                 </div>
             </div>`;
     }).join('');
+}
+
+/*  CALENDAR VIEW  */
+
+function setView(view) {
+    currentView = view;
+    document.getElementById('view-list-btn').classList.toggle('active', view === 'list');
+    document.getElementById('view-cal-btn').classList.toggle('active', view === 'calendar');
+    document.getElementById('list-view').classList.toggle('hidden', view !== 'list');
+    document.getElementById('calendar-view').classList.toggle('hidden', view !== 'calendar');
+    renderTasks();
+}
+
+function calShift(delta) {
+    calMonth += delta;
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    if (calMonth > 11) { calMonth = 0;  calYear++; }
+    renderCalendar();
+}
+
+function calToday() {
+    calYear  = undefined;
+    calMonth = undefined;
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const today = startOfToday();
+    if (calYear === undefined || calMonth === undefined) {
+        calYear  = today.getFullYear();
+        calMonth = today.getMonth();
+    }
+
+    document.getElementById('cal-title').textContent =
+        new Date(calYear, calMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    // Group filtered tasks by due date
+    const byDate = {};
+    getFilteredTasks().forEach(t => {
+        (byDate[t.due_date] = byDate[t.due_date] || []).push(t);
+    });
+
+    const firstOfMonth = new Date(calYear, calMonth, 1);
+    const lead         = (firstOfMonth.getDay() + 6) % 7; // week starts Monday
+    const gridStart    = new Date(calYear, calMonth, 1 - lead);
+
+    let html = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        .map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+    for (let i = 0; i < 42; i++) {
+        const day     = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+        const iso     = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+        const inMonth = day.getMonth() === calMonth;
+        const isToday = day.getTime() === today.getTime();
+        const tasks   = byDate[iso] || [];
+
+        const chips = tasks.slice(0, 3).map(t => `
+            <div class="cal-chip p-${t.priority.toLowerCase()}${t.is_completed ? ' done' : ''}"
+                onclick="openEditTask(${t.id})" title="${escapeHtml(t.title)} — ${t.type}">
+                ${escapeHtml(t.title)}
+            </div>`).join('');
+
+        const more = tasks.length > 3
+            ? `<div class="cal-more">+${tasks.length - 3} more</div>` : '';
+
+        html += `
+            <div class="cal-cell${inMonth ? '' : ' other'}${isToday ? ' today' : ''}">
+                <div class="cal-day-num">${day.getDate()}</div>
+                ${chips}${more}
+            </div>`;
+    }
+
+    document.getElementById('cal-grid').innerHTML = html;
 }
 
 /*  TASK CRUD  */
