@@ -54,14 +54,15 @@ command creates `database/database.sqlite` automatically.
 
 The study assistant works offline out of the box with built-in answers about
 your tasks and deadlines. To connect it to a real AI model instead, add an API
-key to `.env`:
+key and a model ID (from your AI provider's documentation) to `.env`:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=...
 ```
 
-The assistant automatically uses the real model when a key is present and falls
-back to the built-in responses when it isn't (or when the API call fails).
+The assistant automatically uses the real model when both are present and falls
+back to the built-in responses when they aren't (or when the API call fails).
 
 ## Project layout
 

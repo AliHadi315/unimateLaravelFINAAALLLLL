@@ -14,15 +14,21 @@ class AiChatController extends Controller
     public function status(): JsonResponse
     {
         return response()->json([
-            'enabled' => (bool) config('services.anthropic.key'),
+            'enabled' => $this->configured(),
         ]);
+    }
+
+    // Both the API key and a model ID must be set in .env
+    private function configured(): bool
+    {
+        return (bool) (config('services.anthropic.key') && config('services.anthropic.model'));
     }
 
     /*  POST /api/ai/chat  */
 
     public function chat(Request $request): JsonResponse
     {
-        abort_unless(config('services.anthropic.key'), 503, 'AI is not configured.');
+        abort_unless($this->configured(), 503, 'AI is not configured.');
 
         $validated = $request->validate([
             'messages'                => ['required', 'array', 'max:40'],
