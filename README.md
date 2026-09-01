@@ -21,8 +21,10 @@ The frontend talks to the backend through a JSON API under `/api`.
 - Track assignments, exams, and projects with due dates, priorities, completion,
   and file attachments
 - List and monthly calendar views for tasks
-- Store notes, links, and uploaded files per course
-- Message classmates — students at your university who share a course code
+- Store notes, links, and uploaded files per course, with optional sharing —
+  shared resources are visible to classmates taking the same course
+- Message classmates directly, or chat in course group rooms — every course
+  code has a group chat with all students at your university taking it
 - Dashboard with overall progress, upcoming deadlines, and optional browser
   reminders for tasks due today
 - Statistics page with per-course and per-type breakdowns plus a GPA calculator

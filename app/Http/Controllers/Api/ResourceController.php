@@ -23,6 +23,37 @@ class ResourceController extends Controller
         return response()->json($resources);
     }
 
+    /*  GET /api/shared-resources?course_id=N
+        Resources classmates chose to share for the same course code  */
+
+    public function shared(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'course_id' => ['required', 'integer', 'exists:courses,id'],
+        ]);
+
+        $me     = $request->user();
+        $course = $me->courses()->findOrFail($validated['course_id']);
+
+        $code = strtoupper(trim($course->code));
+        $uni  = strtolower($me->university_name);
+
+        $shared = Resource::query()
+            ->where('is_shared', true)
+            ->where('resources.user_id', '!=', $me->id)
+            ->join('courses', 'courses.id', '=', 'resources.course_id')
+            ->join('users', 'users.id', '=', 'resources.user_id')
+            ->whereRaw('UPPER(TRIM(courses.code)) = ?', [$code])
+            ->whereRaw('LOWER(users.university_name) = ?', [$uni])
+            ->orderByDesc('resources.id')
+            ->get([
+                'resources.id', 'resources.title', 'resources.type', 'resources.value',
+                'users.full_name as owner_name',
+            ]);
+
+        return response()->json($shared);
+    }
+
     /*  POST /api/resources  */
 
     public function store(StoreResourceRequest $request): JsonResponse

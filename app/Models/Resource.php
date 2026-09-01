@@ -15,6 +15,11 @@ class Resource extends Model
         'title',
         'type',
         'value',
+        'is_shared',
+    ];
+
+    protected $casts = [
+        'is_shared' => 'boolean',
     ];
 
     /*  Relationships  */

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatSessionController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\GroupChatController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ResourceController;
@@ -30,4 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('chat/contacts',          [MessageController::class, 'contacts']);
     Route::get('chat/messages/{user}',   [MessageController::class, 'conversation']);
     Route::post('chat/messages/{user}',  [MessageController::class, 'send']);
+    Route::get('groups',                 [GroupChatController::class, 'index']);
+    Route::get('groups/{code}/messages', [GroupChatController::class, 'show']);
+    Route::post('groups/{code}/messages',[GroupChatController::class, 'store']);
+    Route::get('shared-resources',       [ResourceController::class, 'shared']);
 });

@@ -351,8 +351,11 @@ select.form-control{cursor:pointer}textarea.form-control{resize:vertical;min-hei
 /* ===== MESSAGES / CONTACTS ===== */
 .contact-item{display:flex;align-items:center;gap:10px}
 .contact-avatar{width:36px;height:36px;font-size:.9rem}
+.group-avatar{background:var(--blue-light);color:var(--blue);box-shadow:none;font-family:var(--font-head);font-weight:800}
 .contact-info{flex:1;min-width:0}
 .unread-badge{background:var(--blue);color:#fff;font-size:.68rem;font-weight:700;min-width:19px;height:19px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0}
+.panel-section-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);padding:12px 12px 4px}
+.bubble-sender{font-size:.72rem;font-weight:700;color:var(--blue);margin:0 0 3px 6px}
 
 /* ===== ATTACHMENTS ===== */
 .attach-link{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:600;color:var(--blue);text-decoration:none;background:var(--blue-light);padding:2px 8px;border-radius:999px;transition:all var(--t)}

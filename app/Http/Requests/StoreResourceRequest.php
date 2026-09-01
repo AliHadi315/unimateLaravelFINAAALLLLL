@@ -18,6 +18,7 @@ class StoreResourceRequest extends FormRequest
             'title'     => ['required', 'string', 'max:255'],
             'type'      => ['required', 'in:Note,Link,File'],
             'value'     => ['required', 'string'],
+            'is_shared' => ['sometimes', 'boolean'],
         ];
     }
 

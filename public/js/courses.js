@@ -272,6 +272,8 @@ function openCourseDetails(id) {
     document.getElementById('detail-task-filter').value = 'all';
     document.getElementById('detail-task-sort').value   = 'due_date';
     document.getElementById('detail-res-filter').value  = 'all';
+    document.getElementById('detail-res-scope').value   = 'mine';
+    delete sharedCache[activeCourse.id]; // refetch shared list next time it's viewed
 
     renderDetailTasks();
     renderDetailResources();
@@ -456,8 +458,16 @@ const RES_ICONS = {
     File: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>`,
 };
 
+let sharedCache = {}; // courseId -> shared resources from classmates
+
 function renderDetailResources() {
     if (!activeCourse) return;
+
+    if (document.getElementById('detail-res-scope').value === 'shared') {
+        renderSharedResources();
+        return;
+    }
+
     const filter    = document.getElementById('detail-res-filter').value;
     let resources   = allResources.filter(r => r.course_id === activeCourse.id);
     if (filter !== 'all') resources = resources.filter(r => r.type === filter);
@@ -489,9 +499,66 @@ function renderDetailResources() {
                     <div class="resource-title">${escapeHtml(r.title)}</div>
                     <div class="mt-1">${valDisp}</div>
                 </div>
+                ${r.is_shared ? '<span class="badge badge-green">Shared</span>' : ''}
                 <span class="badge badge-gray">${r.type}</span>
                 <button class="btn btn-ghost btn-sm" onclick="openEditResourceModal(${r.id})">Edit</button>
                 <button class="btn btn-ghost btn-sm text-danger" onclick="deleteResource(${r.id})">✕</button>
+            </div>`;
+    }).join('');
+}
+
+/*  RESOURCES SHARED BY CLASSMATES  */
+
+async function renderSharedResources() {
+    const el     = document.getElementById('detail-resources-list');
+    const filter = document.getElementById('detail-res-filter').value;
+
+    if (!sharedCache[activeCourse.id]) {
+        el.innerHTML = skeletonRows(3);
+        try {
+            sharedCache[activeCourse.id] = await SharedResourcesAPI.list(activeCourse.id);
+        } catch (err) {
+            el.innerHTML = `<div class="empty-state" style="padding:40px 20px"><h4>Couldn't load shared resources</h4></div>`;
+            return;
+        }
+    }
+
+    let list = sharedCache[activeCourse.id];
+    if (filter !== 'all') list = list.filter(r => r.type === filter);
+
+    if (list.length === 0) {
+        el.innerHTML = `
+            <div class="empty-state" style="padding:40px 20px">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <h4>Nothing shared yet</h4>
+                <p>When classmates share notes, links, or files for this course, they'll show up here.</p>
+            </div>`;
+        return;
+    }
+
+    el.innerHTML = list.map((r, i) => {
+        const icon     = RES_ICONS[r.type] || RES_ICONS.File;
+        const isLast   = i === list.length - 1;
+        const isUpload = r.type === 'File' && (r.value.startsWith('/storage/') || r.value.startsWith('http'));
+
+        let valDisp;
+        if (r.type === 'Link') {
+            valDisp = `<a href="${escapeHtml(r.value)}" target="_blank" class="text-sm" style="color:var(--blue)">${escapeHtml(r.value)}</a>`;
+        } else if (isUpload) {
+            valDisp = `<a href="${escapeHtml(r.value)}" target="_blank" class="text-sm" style="color:var(--blue)">Open file — ${escapeHtml(r.value.split('/').pop())}</a>`;
+        } else {
+            valDisp = `<span class="text-sm text-muted">${escapeHtml(r.value.length > 120 ? r.value.slice(0,120)+'…' : r.value)}</span>`;
+        }
+
+        return `
+            <div class="resource-row" style="${isLast ? '' : 'border-bottom:1px solid var(--border);'}">
+                <div class="resource-icon">${icon}</div>
+                <div class="resource-info">
+                    <div class="resource-title">${escapeHtml(r.title)}</div>
+                    <div class="mt-1">${valDisp}</div>
+                    <div class="text-sm text-muted mt-1">Shared by ${escapeHtml(r.owner_name)}</div>
+                </div>
+                <span class="badge badge-gray">${r.type}</span>
             </div>`;
     }).join('');
 }
@@ -504,6 +571,7 @@ function openAddResourceModal() {
     document.getElementById('r-value').value               = '';
     document.getElementById('r-file').value                = '';
     document.getElementById('r-file-current').textContent  = '';
+    document.getElementById('r-shared').checked            = false;
     document.querySelectorAll('#modal-resource .form-error').forEach(e => e.classList.remove('show'));
     document.querySelectorAll('#modal-resource .form-control').forEach(e => e.style.borderColor = '');
     updateResValueLabel();
@@ -519,6 +587,7 @@ function openEditResourceModal(id) {
     document.getElementById('r-type').value                = r.type;
     document.getElementById('r-value').value               = r.value;
     document.getElementById('r-file').value                = '';
+    document.getElementById('r-shared').checked            = !!r.is_shared;
     document.getElementById('r-file-current').textContent  = r.type === 'File'
         ? 'Current: ' + r.value.split('/').pop() : '';
     updateResValueLabel();
@@ -568,6 +637,7 @@ async function saveResource() {
         title:     document.getElementById('r-title').value.trim(),
         type:      type,
         value:     value,
+        is_shared: document.getElementById('r-shared').checked,
     };
 
     const editId = document.getElementById('r-edit-id').value;

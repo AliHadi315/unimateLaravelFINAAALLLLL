@@ -152,6 +152,16 @@ const MessagesAPI = {
     send(id, body)     { return apiFetch('/chat/messages/' + id, { method: 'POST', body: { body } }); },
 };
 
+const GroupsAPI = {
+    list()             { return apiFetch('/groups'); },
+    messages(code)     { return apiFetch('/groups/' + encodeURIComponent(code) + '/messages'); },
+    send(code, body)   { return apiFetch('/groups/' + encodeURIComponent(code) + '/messages', { method: 'POST', body: { body } }); },
+};
+
+const SharedResourcesAPI = {
+    list(courseId)     { return apiFetch('/shared-resources?course_id=' + courseId); },
+};
+
 const AiAPI = {
     status()       { return apiFetch('/ai/status'); },
     chat(messages) { return apiFetch('/ai/chat', { method: 'POST', body: { messages } }); },
