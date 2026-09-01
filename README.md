@@ -53,7 +53,7 @@ command creates `database/database.sqlite` automatically.
 ### Optional: real AI for the study assistant
 
 The study assistant works offline out of the box with built-in answers about
-your tasks and deadlines. To power it with Claude instead, add an Anthropic API
+your tasks and deadlines. To connect it to a real AI model instead, add an API
 key to `.env`:
 
 ```
