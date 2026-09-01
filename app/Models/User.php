@@ -16,6 +16,7 @@ class User extends Authenticatable
         'university_id',
         'university_name',
         'country',
+        'avatar_path',
         'password',
     ];
 
@@ -23,6 +24,20 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /*  The shape the frontend expects for the logged-in user  */
+
+    public function profile(): array
+    {
+        return [
+            'id'              => $this->id,
+            'fullName'        => $this->full_name,
+            'universityId'    => $this->university_id,
+            'universityName'  => $this->university_name,
+            'country'         => $this->country,
+            'avatarUrl'       => $this->avatar_path ? '/storage/'.$this->avatar_path : null,
+        ];
+    }
 
     /*  Relationships  */
 

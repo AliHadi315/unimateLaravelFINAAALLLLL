@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Profile — UniMate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" id="hamburger"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+                <div><div class="topbar-title">My Profile</div><div class="breadcrumb">Your account details</div></div>
+            </div>
+        </header>
+        <main class="page-body">
+            <div class="profile-layout">
+                <div class="card profile-card">
+                    <div class="profile-avatar-wrap">
+                        <div class="avatar profile-avatar" id="profile-avatar">U</div>
+                        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-input').click()">Change photo</button>
+                        <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/gif,image/webp" class="hidden"/>
+                        <p class="text-sm text-muted" style="text-align:center">JPG, PNG, or GIF — up to 2 MB.</p>
+                    </div>
+                    <div class="profile-id-box">
+                        <div class="text-sm text-muted">University ID</div>
+                        <div class="profile-id" id="profile-uid">—</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="mb-3">Account details</h3>
+                    <div class="alert-box alert-error" id="profile-error"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="p-name">Full Name</label>
+                            <input class="form-control" id="p-name"/>
+                            <div class="form-error" id="err-p-name">Required.</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="p-country">Country</label>
+                            <input class="form-control" id="p-country"/>
+                            <div class="form-error" id="err-p-country">Required.</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="p-uni">University Name</label>
+                        <input class="form-control" id="p-uni"/>
+                        <div class="form-error" id="err-p-uni">Required.</div>
+                    </div>
+
+                    <h3 class="mb-2 mt-3">Change password <span class="text-sm text-muted" style="font-weight:400">(optional)</span></h3>
+                    <div class="form-group">
+                        <label class="form-label" for="p-current-pw">Current Password</label>
+                        <input class="form-control" type="password" id="p-current-pw" autocomplete="current-password"/>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="p-new-pw">New Password</label>
+                            <input class="form-control" type="password" id="p-new-pw" autocomplete="new-password"/>
+                            <div class="form-error" id="err-p-pw">At least 6 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="p-confirm-pw">Confirm New Password</label>
+                            <input class="form-control" type="password" id="p-confirm-pw" autocomplete="new-password"/>
+                            <div class="form-error" id="err-p-cpw">Passwords do not match.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-between mt-3">
+                        <button class="btn btn-ghost text-danger" onclick="logout()">Log out</button>
+                        <button class="btn btn-primary" id="save-profile-btn" onclick="saveProfile()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/sidebar.js"></script>
+<script src="/js/profile.js"></script>
+</body>
+</html>

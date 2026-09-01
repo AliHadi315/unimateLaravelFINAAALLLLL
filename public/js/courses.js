@@ -325,6 +325,7 @@ function renderDetailTasks() {
                     <div class="task-meta text-sm text-muted">
                         ${t.type} · Due ${formatDate(t.due_date)}
                         ${overdue ? '<span class="text-danger"> (Overdue)</span>' : ''}
+                        ${attachmentLink(t)}
                     </div>
                 </div>
                 <span class="badge ${pb}">${t.priority}</span>
@@ -367,6 +368,7 @@ function openAddTaskModal() {
     document.getElementById('t-priority').value             = 'Medium';
     document.getElementById('t-due').value                  = new Date().toISOString().split('T')[0];
     document.getElementById('t-completed').checked          = false;
+    resetTaskFileField();
     document.querySelectorAll('#modal-task .form-error').forEach(e => e.classList.remove('show'));
     document.querySelectorAll('#modal-task .form-control').forEach(e => e.style.borderColor = '');
     openModal('modal-task');
@@ -382,6 +384,7 @@ function openEditTaskModal(id) {
     document.getElementById('t-priority').value             = t.priority;
     document.getElementById('t-due').value                  = t.due_date;
     document.getElementById('t-completed').checked          = t.is_completed;
+    resetTaskFileField(t);
     openModal('modal-task');
 }
 
@@ -404,6 +407,7 @@ async function saveTask() {
     setLoading(btn, true, 'Saving…');
 
     try {
+        Object.assign(data, await uploadTaskFileIfAny());
         if (editId) {
             const updated = await TasksAPI.update(editId, data);
             allTasks = allTasks.map(t => t.id === parseInt(editId) ? updated : t);
@@ -431,12 +435,19 @@ function bindResTypeChange() {
 }
 
 function updateResValueLabel() {
-    const type = document.getElementById('r-type').value;
-    const labels      = { Note: 'Note Content *', Link: 'URL *',             File: 'File Path *' };
-    const placeholders = { Note: 'Write your note…', Link: 'https://…', File: '/path/to/file.pdf' };
-    document.getElementById('r-value-label').textContent = labels[type];
-    document.getElementById('r-value').placeholder       = placeholders[type];
-    document.getElementById('r-value').rows              = type === 'Note' ? 4 : 1;
+    const type   = document.getElementById('r-type').value;
+    const isFile = type === 'File';
+
+    document.getElementById('r-value-group').classList.toggle('hidden', isFile);
+    document.getElementById('r-file-group').classList.toggle('hidden', !isFile);
+
+    if (!isFile) {
+        const labels       = { Note: 'Note Content *',  Link: 'URL *' };
+        const placeholders = { Note: 'Write your note…', Link: 'https://…' };
+        document.getElementById('r-value-label').textContent = labels[type];
+        document.getElementById('r-value').placeholder       = placeholders[type];
+        document.getElementById('r-value').rows              = type === 'Note' ? 4 : 1;
+    }
 }
 
 const RES_ICONS = {
@@ -461,9 +472,15 @@ function renderDetailResources() {
     el.innerHTML = resources.map((r, i) => {
         const icon     = RES_ICONS[r.type] || RES_ICONS.File;
         const isLast   = i === resources.length - 1;
-        const valDisp  = r.type === 'Link'
-            ? `<a href="${escapeHtml(r.value)}" target="_blank" class="text-sm" style="color:var(--blue)">${escapeHtml(r.value)}</a>`
-            : `<span class="text-sm text-muted">${escapeHtml(r.value.length > 80 ? r.value.slice(0,80)+'…' : r.value)}</span>`;
+        const isUpload = r.type === 'File' && (r.value.startsWith('/storage/') || r.value.startsWith('http'));
+        let valDisp;
+        if (r.type === 'Link') {
+            valDisp = `<a href="${escapeHtml(r.value)}" target="_blank" class="text-sm" style="color:var(--blue)">${escapeHtml(r.value)}</a>`;
+        } else if (isUpload) {
+            valDisp = `<a href="${escapeHtml(r.value)}" target="_blank" class="text-sm" style="color:var(--blue)">Open file — ${escapeHtml(r.value.split('/').pop())}</a>`;
+        } else {
+            valDisp = `<span class="text-sm text-muted">${escapeHtml(r.value.length > 80 ? r.value.slice(0,80)+'…' : r.value)}</span>`;
+        }
 
         return `
             <div class="resource-row" style="${isLast ? '' : 'border-bottom:1px solid var(--border);'}">
@@ -485,6 +502,8 @@ function openAddResourceModal() {
     document.getElementById('r-title').value               = '';
     document.getElementById('r-type').value                = 'Note';
     document.getElementById('r-value').value               = '';
+    document.getElementById('r-file').value                = '';
+    document.getElementById('r-file-current').textContent  = '';
     document.querySelectorAll('#modal-resource .form-error').forEach(e => e.classList.remove('show'));
     document.querySelectorAll('#modal-resource .form-control').forEach(e => e.style.borderColor = '');
     updateResValueLabel();
@@ -499,24 +518,59 @@ function openEditResourceModal(id) {
     document.getElementById('r-title').value               = r.title;
     document.getElementById('r-type').value                = r.type;
     document.getElementById('r-value').value               = r.value;
+    document.getElementById('r-file').value                = '';
+    document.getElementById('r-file-current').textContent  = r.type === 'File'
+        ? 'Current: ' + r.value.split('/').pop() : '';
     updateResValueLabel();
     openModal('modal-resource');
 }
 
 async function saveResource() {
+    const type = document.getElementById('r-type').value;
+
     const v1 = validateRequired('r-title', 'err-r-title');
-    const v2 = validateRequired('r-value', 'err-r-value');
-    if (!v1 || !v2) return;
+    if (!v1) return;
+
+    const btn = document.querySelector('#modal-resource .btn-primary');
+    let value;
+
+    if (type === 'File') {
+        const fileInput = document.getElementById('r-file');
+        const existing  = document.getElementById('r-value').value.trim();
+
+        if (!fileInput.files[0] && !existing) {
+            document.getElementById('err-r-file').classList.add('show');
+            return;
+        }
+        document.getElementById('err-r-file').classList.remove('show');
+
+        if (fileInput.files[0]) {
+            setLoading(btn, true, 'Uploading…');
+            try {
+                const up = await UploadsAPI.send(fileInput.files[0]);
+                value = up.url;
+            } catch (err) {
+                showToast(err.message || 'Upload failed.', 'error');
+                setLoading(btn, false);
+                return;
+            }
+        } else {
+            value = existing; // editing without replacing the file
+        }
+    } else {
+        const v2 = validateRequired('r-value', 'err-r-value');
+        if (!v2) return;
+        value = document.getElementById('r-value').value.trim();
+    }
 
     const data = {
         course_id: activeCourse.id,
         title:     document.getElementById('r-title').value.trim(),
-        type:      document.getElementById('r-type').value,
-        value:     document.getElementById('r-value').value.trim(),
+        type:      type,
+        value:     value,
     };
 
     const editId = document.getElementById('r-edit-id').value;
-    const btn    = document.querySelector('#modal-resource .btn-primary');
     setLoading(btn, true, 'Saving…');
 
     try {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>AI Assistant — UniMate</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
@@ -44,7 +44,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="attach-bar hidden" id="attach-bar">
+                    <span class="attach-chip"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span id="attach-name"></span><button onclick="clearAiAttachment()" title="Remove">✕</button></span>
+                </div>
                 <div class="chat-input-bar">
+                    <input type="file" id="ai-file-input" class="hidden" accept=".txt,.md,.csv,.json,.js,.ts,.py,.java,.c,.cpp,.h,.html,.css,.php,.sql,.xml,.yml,.yaml,.log"/>
+                    <button class="clear-btn" onclick="document.getElementById('ai-file-input').click()" title="Attach a text file"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
                     <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Ask about your courses, tasks, or study tips…"></textarea>
                     <button class="send-btn" id="send-btn" onclick="sendMessage()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
                 </div>

@@ -9,6 +9,7 @@ let activeSessionId  = null;
 let cachedTasks      = [];
 let cachedCourses    = [];
 let aiEnabled        = false; // true when the server has an Anthropic API key configured
+let attachedFile     = null;  // {name, content} — a text file to include with the next message
 
 /*  INIT  */
 
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('chat-input').addEventListener('input', function () {
         autoResize(this);
     });
+    document.getElementById('ai-file-input').addEventListener('change', handleAiFile);
 
     // Load sessions and cache context data in parallel
     try {
@@ -104,6 +106,39 @@ function clearChatUI() {
 
 /*  SEND MESSAGE  */
 
+/*  FILE ATTACHMENT  */
+
+async function handleAiFile(e) {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (file.size > 200 * 1024) {
+        showToast('File too large — 200 KB max.', 'error');
+        return;
+    }
+
+    try {
+        const content = await file.text();
+        attachedFile = { name: file.name, content: content.slice(0, 8000) };
+        document.getElementById('attach-name').textContent = file.name;
+        document.getElementById('attach-bar').classList.remove('hidden');
+    } catch (err) {
+        showToast('Could not read that file.', 'error');
+    }
+}
+
+function clearAiAttachment() {
+    attachedFile = null;
+    document.getElementById('attach-bar').classList.add('hidden');
+}
+
+// What the AI actually receives for a message (includes any attached file text)
+function messageForModel(m) {
+    if (!m.attachment) return m.content;
+    return m.content + '\n\n[Attached file: ' + m.attachment.name + ']\n' + m.attachment.content;
+}
+
 function askQuick(text) {
     document.getElementById('chat-input').value = text;
     sendMessage();
@@ -128,9 +163,15 @@ function autoResize(el) {
 async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text  = input.value.trim();
-    if (!text || isLoading) return;
+    if ((!text && !attachedFile) || isLoading) return;
 
-    messages.push({ role: 'user', content: text, time: new Date().toISOString() });
+    messages.push({
+        role:       'user',
+        content:    text || 'Please take a look at the attached file.',
+        time:       new Date().toISOString(),
+        attachment: attachedFile || undefined,
+    });
+    clearAiAttachment();
     input.value = '';
     input.style.height = 'auto';
 
@@ -146,7 +187,7 @@ async function sendMessage() {
     // Real AI when the server has an API key; otherwise the built-in responder
     if (aiEnabled) {
         try {
-            const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+            const history = messages.slice(-20).map(m => ({ role: m.role, content: messageForModel(m) }));
             const r = await AiAPI.chat(history);
             response = r && r.reply;
         } catch (e) {
@@ -156,7 +197,10 @@ async function sendMessage() {
 
     if (!response) {
         await new Promise(res => setTimeout(res, 700 + Math.random() * 1000));
-        response = generateResponse(text);
+        const lastMsg = messages[messages.length - 1];
+        response = (lastMsg.attachment && !aiEnabled)
+            ? `I can see you attached "${lastMsg.attachment.name}", but reading files needs the full AI, which isn't set up on this server yet. I can still help with your tasks, deadlines, and study planning!`
+            : generateResponse(text);
     }
 
     hideTypingIndicator();
@@ -301,9 +345,13 @@ function renderMessages() {
             ? new Date(m.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
             : '';
 
+        const attachChip = m.attachment
+            ? `<div class="bubble-attach"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>${escapeHtml(m.attachment.name)}</div>`
+            : '';
+
         row.innerHTML = isUser
             ? `<div>
-                <div class="bubble user">${escapeHtml(m.content).replace(/\n/g,'<br/>')}</div>
+                <div class="bubble user">${attachChip}${escapeHtml(m.content).replace(/\n/g,'<br/>')}</div>
                 <div class="bubble-time">${timeStr}</div>
                </div>`
             : `<div class="ai-avatar">AI</div>

@@ -18,8 +18,10 @@ class StoreTaskRequest extends FormRequest
             'title'        => ['required', 'string', 'max:255'],
             'type'         => ['required', 'in:Assignment,Exam,Project'],
             'priority'     => ['required', 'in:Low,Medium,High'],
-            'due_date'     => ['required', 'date'],
-            'is_completed' => ['sometimes', 'boolean'],
+            'due_date'        => ['required', 'date'],
+            'is_completed'    => ['sometimes', 'boolean'],
+            'attachment_path' => ['nullable', 'string', 'max:2048'],
+            'attachment_name' => ['nullable', 'string', 'max:255'],
         ];
     }
 

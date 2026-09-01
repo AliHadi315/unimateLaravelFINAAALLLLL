@@ -17,6 +17,8 @@ class Task extends Model
         'priority',
         'due_date',
         'is_completed',
+        'attachment_path',
+        'attachment_name',
     ];
 
     protected $casts = [

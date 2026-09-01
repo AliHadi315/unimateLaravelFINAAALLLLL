@@ -138,6 +138,7 @@ function renderList() {
                         <span class="text-sm text-muted">·</span>
                         <span class="text-sm">${dueTxt}</span>
                         ${course ? `<span class="badge badge-gray" style="font-size:.68rem">${escapeHtml(course.code)}</span>` : ''}
+                        ${attachmentLink(t)}
                     </div>
                 </div>
                 <span class="badge ${pb}">${t.priority}</span>
@@ -243,6 +244,7 @@ function openAddTask() {
     document.getElementById('t-priority').value             = 'Medium';
     document.getElementById('t-due').value                  = new Date().toISOString().split('T')[0];
     document.getElementById('t-completed').checked          = false;
+    resetTaskFileField();
     document.querySelectorAll('#modal-task .form-error').forEach(e => e.classList.remove('show'));
     document.querySelectorAll('#modal-task .form-control').forEach(e => e.style.borderColor = '');
     openModal('modal-task');
@@ -259,6 +261,7 @@ function openEditTask(id) {
     document.getElementById('t-priority').value             = t.priority;
     document.getElementById('t-due').value                  = t.due_date;
     document.getElementById('t-completed').checked          = t.is_completed;
+    resetTaskFileField(t);
     openModal('modal-task');
 }
 
@@ -282,6 +285,7 @@ async function saveTask() {
     setLoading(btn, true, 'Saving…');
 
     try {
+        Object.assign(data, await uploadTaskFileIfAny());
         if (editId) {
             const updated = await TasksAPI.update(editId, data);
             allTasks = allTasks.map(t => t.id === parseInt(editId) ? updated : t);

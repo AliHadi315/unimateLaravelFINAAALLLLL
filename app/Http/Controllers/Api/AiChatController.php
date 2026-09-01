@@ -27,7 +27,7 @@ class AiChatController extends Controller
         $validated = $request->validate([
             'messages'                => ['required', 'array', 'max:40'],
             'messages.*.role'         => ['required', 'in:user,ai'],
-            'messages.*.content'      => ['required', 'string', 'max:4000'],
+            'messages.*.content'      => ['required', 'string', 'max:12000'], // roomy enough for attached file text
         ]);
 
         $user    = $request->user();

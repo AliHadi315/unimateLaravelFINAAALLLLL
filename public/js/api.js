@@ -105,6 +105,53 @@ const ResourcesAPI = {
     remove(id)    { return apiFetch('/resources/' + id, { method: 'DELETE' }); },
 };
 
+// For multipart uploads — the browser sets the Content-Type boundary itself
+async function apiUpload(endpoint, formData) {
+    const token = getToken();
+    const res = await fetch(API_BASE + endpoint, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+        },
+        body: formData,
+    });
+    if (res.status === 401) {
+        removeToken();
+        window.location.replace('/login');
+        return null;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        const msg = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Upload failed.');
+        throw new Error(msg);
+    }
+    return data;
+}
+
+const UploadsAPI = {
+    send(file) {
+        const fd = new FormData();
+        fd.append('file', file);
+        return apiUpload('/uploads', fd);
+    },
+};
+
+const ProfileAPI = {
+    update(d) { return apiFetch('/auth/profile', { method: 'PUT', body: d }); },
+    avatar(file) {
+        const fd = new FormData();
+        fd.append('avatar', file);
+        return apiUpload('/auth/avatar', fd);
+    },
+};
+
+const MessagesAPI = {
+    contacts()         { return apiFetch('/chat/contacts'); },
+    conversation(id)   { return apiFetch('/chat/messages/' + id); },
+    send(id, body)     { return apiFetch('/chat/messages/' + id, { method: 'POST', body: { body } }); },
+};
+
 const AiAPI = {
     status()       { return apiFetch('/ai/status'); },
     chat(messages) { return apiFetch('/ai/chat', { method: 'POST', body: { messages } }); },

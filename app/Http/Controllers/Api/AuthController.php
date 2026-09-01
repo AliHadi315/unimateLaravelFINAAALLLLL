@@ -92,12 +92,6 @@ class AuthController extends Controller
 
     private function formatUser(User $user): array
     {
-        return [
-            'id'              => $user->id,
-            'fullName'        => $user->full_name,
-            'universityId'    => $user->university_id,
-            'universityName'  => $user->university_name,
-            'country'         => $user->country,
-        ];
+        return $user->profile();
     }
 }

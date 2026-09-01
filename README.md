@@ -16,15 +16,18 @@ The frontend talks to the backend through a JSON API under `/api`.
 ## Features
 
 - Register / login with your university ID
+- Profile page with picture upload and password change
 - Manage courses (code, instructor, semester, optional credits and grade)
-- Track assignments, exams, and projects with due dates, priorities, and completion
+- Track assignments, exams, and projects with due dates, priorities, completion,
+  and file attachments
 - List and monthly calendar views for tasks
-- Store notes, links, and file references per course
+- Store notes, links, and uploaded files per course
+- Message classmates — students at your university who share a course code
 - Dashboard with overall progress, upcoming deadlines, and optional browser
   reminders for tasks due today
 - Statistics page with per-course and per-type breakdowns plus a GPA calculator
 - Study assistant that answers questions about your own tasks and deadlines,
-  with saveable chat sessions
+  supports attaching text files, and saves chat sessions
 - Light and dark themes
 
 ## Getting started
@@ -34,8 +37,11 @@ composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
+php artisan storage:link
 php artisan serve
 ```
+
+The `storage:link` step is needed for profile pictures and file uploads.
 
 Then open http://localhost:8000 and create an account.
 

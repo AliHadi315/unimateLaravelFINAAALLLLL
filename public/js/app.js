@@ -179,7 +179,43 @@ function populateSidebarUser() {
     if (!user) return;
     if (nameEl)   nameEl.textContent   = user.fullName || user.universityId;
     if (roleEl)   roleEl.textContent   = user.universityName || 'Student';
-    if (avatarEl) avatarEl.textContent = (user.fullName || 'U')[0].toUpperCase();
+    if (avatarEl) setAvatar(avatarEl, user);
+}
+
+// Render a profile picture if the user has one, otherwise their initial
+function setAvatar(el, user) {
+    if (user && user.avatarUrl) {
+        el.innerHTML = `<img src="${escapeHtml(user.avatarUrl)}" alt="" class="avatar-img"/>`;
+    } else {
+        el.textContent = ((user && user.fullName) || 'U')[0].toUpperCase();
+    }
+}
+
+/*  TASK ATTACHMENTS (shared by tasks.js and courses.js)  */
+
+async function uploadTaskFileIfAny() {
+    const input = document.getElementById('t-file');
+    if (!input || !input.files[0]) return {};
+    const up = await UploadsAPI.send(input.files[0]);
+    return { attachment_path: up.url, attachment_name: up.name };
+}
+
+function resetTaskFileField(task) {
+    const input = document.getElementById('t-file');
+    const label = document.getElementById('t-file-current');
+    if (input) input.value = '';
+    if (label) label.textContent = task && task.attachment_name
+        ? 'Attached: ' + task.attachment_name
+        : '';
+}
+
+function attachmentLink(t) {
+    if (!t.attachment_path) return '';
+    const name = (t.attachment_name || 'file');
+    return `<a href="${escapeHtml(t.attachment_path)}" target="_blank" class="attach-link"
+        onclick="event.stopPropagation()" title="${escapeHtml(name)}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        ${escapeHtml(name.length > 22 ? name.slice(0, 22) + '…' : name)}</a>`;
 }
 
 /*  CLOSE MODAL ON OVERLAY / ESCAPE  */

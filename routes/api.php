@@ -4,8 +4,11 @@ use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatSessionController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -21,4 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('tasks/{task}/toggle',  [TaskController::class, 'toggle']);
     Route::get('ai/status',              [AiChatController::class, 'status']);
     Route::post('ai/chat',               [AiChatController::class, 'chat']);
+    Route::put('auth/profile',           [ProfileController::class, 'update']);
+    Route::post('auth/avatar',           [ProfileController::class, 'avatar']);
+    Route::post('uploads',               [UploadController::class, 'store']);
+    Route::get('chat/contacts',          [MessageController::class, 'contacts']);
+    Route::get('chat/messages/{user}',   [MessageController::class, 'conversation']);
+    Route::post('chat/messages/{user}',  [MessageController::class, 'send']);
 });

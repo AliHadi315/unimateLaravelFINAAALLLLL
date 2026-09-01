@@ -16,6 +16,8 @@ $pages = [
     '/tasks'      => 'pages/tasks.html',
     '/statistics' => 'pages/statistics.html',
     '/ai'         => 'pages/ai.html',
+    '/messages'   => 'pages/messages.html',
+    '/profile'    => 'pages/profile.html',
 ];
 
 foreach ($pages as $uri => $file) {
