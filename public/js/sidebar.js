@@ -24,7 +24,7 @@ function renderSidebar(activePage) {
             ${navHTML}
         </nav>
         <div class="sidebar-footer">
-            <div class="sidebar-user" onclick="logout()">
+            <div class="sidebar-user" onclick="logout()" title="Log out">
                 <div class="avatar" id="sidebar-avatar">U</div>
                 <div class="avatar-info">
                     <div class="avatar-name" id="sidebar-user-name">Student</div>

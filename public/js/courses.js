@@ -33,10 +33,25 @@ async function loadData() {
         allCourses   = courses;
         allTasks     = tasks;
         allResources = resources;
+        populateSemesterFilter();
         renderCourses();
     } catch (err) {
         showToast('Failed to load courses.', 'error');
     }
+}
+
+/*  SEMESTER FILTER  */
+
+// Build the filter options from the semesters actually in use
+function populateSemesterFilter() {
+    const sel      = document.getElementById('filter-semester');
+    const current  = sel.value;
+    const semesters = [...new Set(allCourses.map(c => c.semester))].sort();
+
+    sel.innerHTML = '<option value="All">All Semesters</option>' +
+        semesters.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+
+    if ([...sel.options].some(o => o.value === current)) sel.value = current;
 }
 
 /*  TABS  */
@@ -180,6 +195,7 @@ async function saveCourse() {
             showToast('Course added.', 'success');
         }
         closeModal('modal-course');
+        populateSemesterFilter();
         renderCourses();
     } catch (err) {
         showToast(err.message || 'Failed to save course.', 'error');
@@ -216,6 +232,7 @@ async function confirmDeleteCourse() {
         allTasks     = allTasks.filter(t => t.course_id !== id);
         allResources = allResources.filter(r => r.course_id !== id);
         closeModal('modal-delete-course');
+        populateSemesterFilter();
         renderCourses();
         showToast('Course deleted.', 'success');
     } catch (err) {
@@ -231,10 +248,10 @@ function openCourseDetails(id) {
     activeCourse = allCourses.find(x => x.id === id);
     if (!activeCourse) return;
 
-    document.getElementById('detail-course-name').textContent =
-        escapeHtml(activeCourse.name);
+    // textContent is safe on its own — escaping here would show "&amp;" literally
+    document.getElementById('detail-course-name').textContent = activeCourse.name;
     document.getElementById('detail-course-code').textContent =
-        `${escapeHtml(activeCourse.code)} · ${escapeHtml(activeCourse.instructor)} · ${escapeHtml(activeCourse.semester)}`;
+        `${activeCourse.code} · ${activeCourse.instructor} · ${activeCourse.semester}`;
 
     // Reset tabs
     const buttons = document.querySelectorAll('#modal-details .tab-btn');
@@ -258,21 +275,19 @@ function renderDetailTasks() {
 
     const filter = document.getElementById('detail-task-filter').value;
     const sort   = document.getElementById('detail-task-sort').value;
-    const now    = new Date();
 
     let tasks = allTasks.filter(t => t.course_id === activeCourse.id);
 
     tasks = tasks.filter(t => {
-        const due = new Date(t.due_date);
         if (filter === 'pending')   return !t.is_completed;
         if (filter === 'completed') return t.is_completed;
-        if (filter === 'overdue')   return !t.is_completed && due < now;
-        if (filter === 'today')     return due.toDateString() === now.toDateString();
+        if (filter === 'overdue')   return isOverdue(t);
+        if (filter === 'today')     return daysUntil(t.due_date) === 0;
         return true;
     });
 
     tasks.sort((a, b) => {
-        if (sort === 'due_date') return new Date(a.due_date) - new Date(b.due_date);
+        if (sort === 'due_date') return parseDate(a.due_date) - parseDate(b.due_date);
         if (sort === 'priority') return PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
         if (sort === 'title')    return a.title.localeCompare(b.title);
         return 0;
@@ -286,8 +301,7 @@ function renderDetailTasks() {
     }
 
     el.innerHTML = tasks.map((t, i) => {
-        const due     = new Date(t.due_date);
-        const overdue = !t.is_completed && due < now;
+        const overdue = isOverdue(t);
         const pb      = PRIORITY_BADGE[t.priority] || 'badge-gray';
         const isLast  = i === tasks.length - 1;
 

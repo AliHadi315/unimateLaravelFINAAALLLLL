@@ -65,28 +65,26 @@ function renderTasks() {
     const priority = document.getElementById('filter-priority').value;
     const courseId = document.getElementById('filter-course').value;
     const sortBy   = document.getElementById('sort-field').value;
-    const now      = new Date();
-    const weekEnd  = new Date(now.getTime() + 7 * 86400000);
 
     const courseMap = {};
     allCourses.forEach(c => { courseMap[c.id] = c; });
 
     let tasks = allTasks.filter(t => {
-        const due = new Date(t.due_date);
+        const days = daysUntil(t.due_date);
         if (q && !t.title.toLowerCase().includes(q))                return false;
         if (type !== 'all'     && t.type !== type)                   return false;
         if (priority !== 'all' && t.priority !== priority)           return false;
         if (courseId !== 'all' && t.course_id !== parseInt(courseId)) return false;
         if (status === 'pending')   return !t.is_completed;
         if (status === 'completed') return t.is_completed;
-        if (status === 'overdue')   return !t.is_completed && due < now;
-        if (status === 'today')     return due.toDateString() === now.toDateString();
-        if (status === 'thisWeek')  return due >= now && due <= weekEnd;
+        if (status === 'overdue')   return isOverdue(t);
+        if (status === 'today')     return days === 0;
+        if (status === 'thisWeek')  return days >= 0 && days <= 7;
         return true;
     });
 
     tasks.sort((a, b) => {
-        if (sortBy === 'due_date') return new Date(a.due_date) - new Date(b.due_date);
+        if (sortBy === 'due_date') return parseDate(a.due_date) - parseDate(b.due_date);
         if (sortBy === 'priority') return PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
         if (sortBy === 'title')    return a.title.localeCompare(b.title);
         return 0;
@@ -105,9 +103,8 @@ function renderTasks() {
     }
 
     el.innerHTML = tasks.map((t, i) => {
-        const due     = new Date(t.due_date);
-        const overdue = !t.is_completed && due < now;
-        const days    = Math.ceil((due - now) / 86400000);
+        const overdue = isOverdue(t);
+        const days    = daysUntil(t.due_date);
         const pb      = PRIORITY_BADGE[t.priority] || 'badge-gray';
         const course  = courseMap[t.course_id];
         const isLast  = i === tasks.length - 1;

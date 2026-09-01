@@ -105,11 +105,35 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-/*  DATE FORMAT  */
+/*  DATES  */
+
+// Parse "YYYY-MM-DD" as *local* midnight. new Date("YYYY-MM-DD") would parse
+// as UTC, which makes tasks due today look overdue in the afternoon.
+function parseDate(dateStr) {
+    if (!dateStr) return null;
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+function startOfToday() {
+    const n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+}
+
+// Whole days between today and the due date (negative = overdue)
+function daysUntil(dateStr) {
+    const due = parseDate(dateStr);
+    if (!due) return 0;
+    return Math.round((due - startOfToday()) / 86400000);
+}
+
+function isOverdue(task) {
+    return !task.is_completed && daysUntil(task.due_date) < 0;
+}
 
 function formatDate(dateStr) {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
+    const d = parseDate(dateStr);
+    if (!d) return '—';
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 

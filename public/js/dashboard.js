@@ -44,10 +44,9 @@ async function refreshDashboard() {
 /*  STATS  */
 
 function renderStats(courses, tasks) {
-    const now       = new Date();
     const completed = tasks.filter(t => t.is_completed).length;
     const pending   = tasks.filter(t => !t.is_completed).length;
-    const overdue   = tasks.filter(t => !t.is_completed && new Date(t.due_date) < now).length;
+    const overdue   = tasks.filter(isOverdue).length;
 
     document.getElementById('stat-courses').textContent   = courses.length;
     document.getElementById('stat-total').textContent     = tasks.length;
@@ -73,13 +72,12 @@ function renderProgress(tasks) {
 /*  UPCOMING TASKS  */
 
 function renderUpcomingTasks(tasks, courses) {
-    const now       = new Date();
     const courseMap = {};
     courses.forEach(c => { courseMap[c.id] = c; });
 
     const upcoming = tasks
         .filter(t => !t.is_completed)
-        .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
+        .sort((a, b) => parseDate(a.due_date) - parseDate(b.due_date))
         .slice(0, 5);
 
     const listEl = document.getElementById('upcoming-list');
@@ -99,8 +97,7 @@ function renderUpcomingTasks(tasks, courses) {
     }
 
     listEl.innerHTML = upcoming.map((t, i) => {
-        const due    = new Date(t.due_date);
-        const days   = Math.ceil((due - now) / 86400000);
+        const days   = daysUntil(t.due_date);
         const course = courseMap[t.course_id];
         const pb     = BADGE[t.priority] || 'badge-gray';
         const isLast = i === upcoming.length - 1;

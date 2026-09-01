@@ -285,6 +285,10 @@ select.form-control{cursor:pointer}textarea.form-control{resize:vertical;min-hei
 .send-btn svg{width:18px;height:18px}
 .clear-btn{background:none;border:none;cursor:pointer;color:var(--text-3);padding:8px;border-radius:8px;transition:all var(--t);display:flex;align-items:center;justify-content:center}
 .clear-btn:hover{background:var(--red-light);color:var(--red)}.clear-btn svg{width:18px;height:18px}
+.quick-prompts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+.quick-prompt{padding:7px 14px;border:1px solid var(--border-2);border-radius:999px;background:var(--surface);color:var(--text-2);font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;transition:all var(--t)}
+.quick-prompt:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.history-toggle{display:none}
 
 /* ===== TASK / RESOURCE ROWS ===== */
 .task-row,.resource-row{display:flex;align-items:center;gap:10px;padding:11px 0;transition:background .15s}
@@ -328,11 +332,43 @@ select.form-control{cursor:pointer}textarea.form-control{resize:vertical;min-hei
 .font-bold{font-weight:700}.w-full{width:100%}.hidden{display:none!important}.strike{text-decoration:line-through;opacity:.5}
 
 /* ===== RESPONSIVE ===== */
+@media(max-width:920px){
+  .hero{gap:40px}
+  .hero h1{font-size:2.4rem}
+}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}.main-content{margin-left:0}.hamburger{display:flex}
-  .page-body{padding:18px}.form-row{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}
-  .topbar{padding:0 16px}.hero{grid-template-columns:1fr;padding:60px 5% 40px;gap:40px}
-  .hero h1{font-size:2rem}.hero-visual{display:none}.nav-links a:not(.btn-nav){display:none}
-  .sessions-panel{display:none}
+  .page-body{padding:18px}.form-row{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .topbar{padding:0 16px;gap:10px}
+  .hero{grid-template-columns:1fr;padding:60px 5% 40px;gap:40px}
+  .hero h1{font-size:2rem}.hero-visual{display:none}
+  .nav-links .nav-features{display:none}
+  /* Chat history becomes a slide-in drawer, opened from the topbar */
+  .sessions-panel{position:fixed;top:var(--header-h);left:0;bottom:0;z-index:90;transform:translateX(-100%);transition:transform var(--t);box-shadow:var(--shadow-lg)}
+  .sessions-panel.open{transform:translateX(0)}
+  .history-toggle{display:inline-flex}
+  .bubble{max-width:85%}
+  /* Toolbars: search on its own line, selects share the rest */
+  .toolbar .search-bar{flex:1 1 100%;min-width:0}
+  .toolbar select.form-control{flex:1 1 calc(50% - 5px);min-width:0}
+  /* Task rows wrap instead of overflowing */
+  .task-list-row,.task-row,.resource-row{flex-wrap:wrap}
+  .task-info,.resource-info{flex:1 1 60%}
+  .task-actions{margin-left:auto}
+}
+@media(max-width:480px){
+  html{font-size:14px}
+  .page-body{padding:14px}
+  .auth-card{padding:28px 22px}
+  .modal{padding:20px}
+  .topbar-title{font-size:.95rem}
+  .breadcrumb{display:none}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-btns a{width:100%;text-align:center}
+  .btn-cta{display:block}
+  .chat-messages{padding:16px}
+  .chat-input-bar{padding:12px 14px}
+  .modal-footer{flex-direction:column-reverse}
+  .modal-footer .btn{width:100%;justify-content:center}
 }

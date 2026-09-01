@@ -2,15 +2,26 @@
 
 use Illuminate\Support\Facades\Route;
 
-function servePage(string $file) {
-    return response(file_get_contents(public_path($file)), 200, ['Content-Type' => 'text/html; charset=UTF-8']);
-}
+/*
+ * The frontend is plain HTML/JS in public/. These routes serve each page
+ * on a clean URL (e.g. /dashboard instead of /pages/dashboard.html).
+ */
 
-Route::get('/',          fn() => servePage('index.html'));
-Route::get('/login',     fn() => servePage('pages/login.html'))->name('login');
-Route::get('/register',  fn() => servePage('pages/register.html'));
-Route::get('/dashboard', fn() => servePage('pages/dashboard.html'));
-Route::get('/courses',   fn() => servePage('pages/courses.html'));
-Route::get('/tasks',     fn() => servePage('pages/tasks.html'));
-Route::get('/statistics',fn() => servePage('pages/statistics.html'));
-Route::get('/ai',        fn() => servePage('pages/ai.html'));
+$pages = [
+    '/'           => 'index.html',
+    '/login'      => 'pages/login.html',
+    '/register'   => 'pages/register.html',
+    '/dashboard'  => 'pages/dashboard.html',
+    '/courses'    => 'pages/courses.html',
+    '/tasks'      => 'pages/tasks.html',
+    '/statistics' => 'pages/statistics.html',
+    '/ai'         => 'pages/ai.html',
+];
+
+foreach ($pages as $uri => $file) {
+    $route = Route::get($uri, fn () => response()->file(public_path($file)));
+
+    if ($uri === '/login') {
+        $route->name('login'); // where unauthenticated web requests get redirected
+    }
+}

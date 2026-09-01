@@ -1,6 +1,7 @@
 
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+// Relative path so it works on any host/port (artisan serve, Apache, etc.)
+const API_BASE = '/api';
 
 function getToken()    { return localStorage.getItem('um_token') || null; }
 function setToken(t)   { localStorage.setItem('um_token', t); }
@@ -18,8 +19,9 @@ function requireAuth() {
     return true;
 }
 
-function logout() {
-    try { apiFetch('/auth/logout', { method: 'POST' }); } catch(e) {}
+async function logout() {
+    if (!confirm('Log out of UniMate?')) return;
+    try { await apiFetch('/auth/logout', { method: 'POST' }); } catch (e) { /* token cleared below anyway */ }
     clearUser();
     window.location.replace('/login');
 }
@@ -51,7 +53,7 @@ async function apiFetch(endpoint, options = {}) {
             window.location.replace('/login');
             return null;
         }
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) {
             const msg = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Request failed.');
             const err = new Error(msg);

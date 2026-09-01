@@ -22,11 +22,10 @@ async function renderStats() {
             CoursesAPI.list(),
         ]);
 
-        const now       = new Date();
         const total     = tasks.length;
         const completed = tasks.filter(t => t.is_completed).length;
         const pending   = tasks.filter(t => !t.is_completed).length;
-        const overdue   = tasks.filter(t => !t.is_completed && new Date(t.due_date) < now).length;
+        const overdue   = tasks.filter(isOverdue).length;
         const pct       = total ? Math.round(completed / total * 100) : 0;
 
         // Tiles
@@ -43,7 +42,7 @@ async function renderStats() {
             : 'No tasks yet.';
 
         renderTypeBreakdown(tasks);
-        renderCourseProgress(tasks, courses, now);
+        renderCourseProgress(tasks, courses);
 
     } catch (err) {
         showToast('Failed to load statistics.', 'error');
@@ -85,7 +84,7 @@ function renderTypeBreakdown(tasks) {
 
 /*  COURSE PROGRESS  */
 
-function renderCourseProgress(tasks, courses, now) {
+function renderCourseProgress(tasks, courses) {
     const el = document.getElementById('course-progress');
 
     if (courses.length === 0) {
@@ -98,7 +97,7 @@ function renderCourseProgress(tasks, courses, now) {
         const cdone    = ctasks.filter(t => t.is_completed).length;
         const ctotal   = ctasks.length;
         const cpct     = ctotal ? Math.round(cdone / ctotal * 100) : 0;
-        const coverdue = ctasks.filter(t => !t.is_completed && new Date(t.due_date) < now).length;
+        const coverdue = ctasks.filter(isOverdue).length;
         const isLast   = i === courses.length - 1;
 
         return `
