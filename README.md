@@ -385,4 +385,4 @@ Render, or classic cPanel shared hosting.
 
 ## Author
 
-**Ali Sirbali** — CSC 400 Web Programming, Al Maaref University.
+**Ali Hadi Meselmani** — CSC 400 Web Programming, Al Maaref University.
